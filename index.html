@@ -1,0 +1,1580 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="corporate">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>RUBEL EXAMBRO - Sistem Asesmen Digital Modern</title>
+
+  <!-- Tailwind CSS & DaisyUI -->
+  <link href="https://cdn.jsdelivr.net/npm/daisyui@4.10.2/dist/full.min.css" rel="stylesheet" type="text/css" />
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Library PDF Generator A4 (jsPDF & AutoTable) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+
+  <!-- Google Fonts: Plus Jakarta Sans & Amiri (Font Mushaf Arab) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      -webkit-user-select: none;
+      user-select: none;
+      touch-action: manipulation;
+    }
+    /* Styling Khusus Teks Arab agar Harakat Jelas & Tidak Bertumpuk */
+    .font-arab {
+      font-family: 'Amiri', serif;
+      font-size: 1.65rem;
+      line-height: 2.5rem;
+      direction: rtl;
+      text-align: right;
+      display: block;
+      padding: 0.4rem 0;
+      color: #0f172a;
+    }
+    .font-arab-inline {
+      font-family: 'Amiri', serif;
+      font-size: 1.45rem;
+      line-height: 2.2rem;
+      padding: 0 0.25rem;
+    }
+    /* Animasi Transisi Soal */
+    .fade-enter {
+      animation: fadeIn 0.22s ease-out forwards;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body class="bg-slate-100 min-h-screen flex flex-col justify-between text-slate-800" oncontextmenu="return false;">
+
+  <!-- ===================================================================== -->
+  <!-- 1. HALAMAN LOGIN (TAB MURID & TAB ADMIN)                              -->
+  <!-- ===================================================================== -->
+  <main id="view-login" class="flex-grow flex items-center justify-center p-4">
+    <div class="card w-full max-w-md bg-white shadow-xl border border-slate-200 overflow-hidden">
+      <!-- Header Brand RUBEL EXAMBRO (Tanpa Tombol Gerigi Server API) -->
+      <div class="bg-gradient-to-br from-blue-900 via-indigo-900 to-slate-900 text-white p-6 text-center relative">
+        <div class="w-16 h-16 rounded-2xl bg-white/10 backdrop-blur-md flex items-center justify-center mx-auto mb-3 border border-white/20 shadow-inner">
+          <span class="text-3xl">🛡️</span>
+        </div>
+        <h1 class="text-2xl font-extrabold tracking-tight">RUBEL EXAMBRO</h1>
+        <p class="text-xs text-blue-200 mt-1">Computer-Based Testing • Kelas X, XI & XII (30 Bab)</p>
+      </div>
+
+      <!-- Tab Switcher: Murid vs Admin -->
+      <div class="grid grid-cols-2 bg-slate-100 p-1.5 m-4 rounded-xl border border-slate-200">
+        <button id="tab-btn-murid" onclick="switchLoginTab('murid')" class="py-2 text-sm font-bold rounded-lg bg-white text-blue-900 shadow-sm transition-all">
+          🎓 Portal Murid
+        </button>
+        <button id="tab-btn-admin" onclick="switchLoginTab('admin')" class="py-2 text-sm font-bold rounded-lg text-slate-500 hover:text-slate-800 transition-all">
+          🔐 Portal Admin
+        </button>
+      </div>
+
+      <!-- FORM LOGIN MURID -->
+      <div id="form-login-murid" class="px-6 pb-6 space-y-4">
+        <div class="form-control">
+          <label class="label py-1"><span class="label-text font-bold text-slate-700">NISN / Nomor Induk Siswa</span></label>
+          <input type="text" id="input-nisn" placeholder="Contoh: 1001" class="input input-bordered w-full font-semibold focus:border-blue-700" />
+        </div>
+        <div class="form-control">
+          <label class="label py-1"><span class="label-text font-bold text-slate-700">Token Ujian Bab</span></label>
+          <input type="text" id="input-token" placeholder="Contoh: RBX01" class="input input-bordered w-full uppercase font-extrabold tracking-widest text-center text-lg bg-slate-50 focus:border-blue-700" />
+          <label class="label py-0.5"><span class="label-text-alt text-slate-400">Masukkan Token sesuai Bab yang diujikan guru.</span></label>
+        </div>
+
+        <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 text-xs text-amber-900 space-y-1">
+          <p class="font-bold">⚠️ Pakta Integritas Exambrowser:</p>
+          <ul class="list-disc list-inside space-y-0.5 text-[11px]">
+            <li>Layar otomatis dikunci penuh (Fullscreen Mode).</li>
+            <li>Keluar aplikasi / pindah tab / split screen akan tercatat sebagai pelanggaran.</li>
+          </ul>
+        </div>
+
+        <button id="btn-start-exam" onclick="loginMurid()" class="btn bg-blue-800 hover:bg-blue-900 text-white w-full font-bold text-base shadow-lg">
+          🚀 Mulai Kerjakan Ujian
+        </button>
+      </div>
+
+      <!-- FORM LOGIN ADMIN -->
+      <div id="form-login-admin" class="px-6 pb-6 space-y-4 hidden">
+        <div class="form-control">
+          <label class="label py-1"><span class="label-text font-bold text-slate-700">Email Admin / Superadmin</span></label>
+          <input type="email" id="input-admin-email" placeholder="monggomembaca@gmail.com" class="input input-bordered w-full font-medium" />
+        </div>
+        <div class="form-control">
+          <label class="label py-1"><span class="label-text font-bold text-slate-700">PIN / Kode Akses Admin</span></label>
+          <input type="password" id="input-admin-pin" placeholder="••••••" class="input input-bordered w-full font-bold tracking-widest" />
+          <label class="label py-0.5"><span class="label-text-alt text-slate-400">Masukkan PIN Akses yang terdaftar.</span></label>
+        </div>
+        <button id="btn-login-admin" onclick="loginAdmin()" class="btn bg-slate-900 hover:bg-slate-800 text-white w-full font-bold">
+          🔓 Masuk Dashboard Admin
+        </button>
+      </div>
+    </div>
+  </main>
+
+  <!-- ===================================================================== -->
+  <!-- 2. HALAMAN LEMBAR UJIAN MURID (SINGLE-QUESTION EXAMBROWSER)           -->
+  <!-- ===================================================================== -->
+  <section id="view-exam" class="hidden flex-col min-h-screen bg-slate-100">
+    <!-- Sticky Topbar Exambro -->
+    <header class="sticky top-0 z-30 bg-blue-950 text-white shadow-md px-3 py-2.5">
+      <div class="max-w-xl mx-auto flex items-center justify-between gap-2">
+        <div class="truncate">
+          <div class="flex items-center gap-1.5">
+            <span class="badge badge-xs badge-warning font-bold">LIVE</span>
+            <h2 id="exam-student-name" class="font-bold text-sm truncate">Nama Siswa</h2>
+          </div>
+          <p id="exam-chapter-title" class="text-[11px] text-blue-200 truncate">Bab 1</p>
+        </div>
+
+        <div class="flex items-center gap-2 shrink-0">
+          <!-- Indikator Timer -->
+          <div class="bg-blue-900/90 border border-blue-700 px-3 py-1 rounded-xl text-center">
+            <span class="block text-[9px] uppercase text-blue-300 leading-none">Sisa Waktu</span>
+            <span id="exam-timer" class="font-mono font-extrabold text-sm md:text-base text-amber-300">45:00</span>
+          </div>
+          <!-- Tombol Daftar Nomor Soal -->
+          <button onclick="toggleDrawerSoal()" class="btn btn-sm bg-white text-blue-950 hover:bg-blue-50 font-bold border-0">
+            📋 <span id="exam-progress-badge">1/10</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Area Konten Single Soal -->
+    <div class="flex-grow max-w-xl w-full mx-auto p-3 pb-28">
+      <!-- Bar Informasi Nomor & Jenis Soal -->
+      <div class="flex items-center justify-between bg-white px-4 py-2.5 rounded-t-2xl border border-b-0 border-slate-200 shadow-sm">
+        <div class="flex items-center gap-2">
+          <span class="bg-blue-900 text-white font-extrabold text-xs px-2.5 py-1 rounded-lg">
+            SOAL NO. <span id="q-number-display">1</span>
+          </span>
+          <span id="q-type-badge" class="badge badge-sm badge-outline font-bold text-slate-600">Pilihan Ganda</span>
+        </div>
+        <span id="violation-badge" class="text-[11px] font-bold text-rose-600 hidden">⚠️ Pelanggaran: 0/3</span>
+      </div>
+
+      <!-- Kartu Butir Soal & Pilihan Interaktif -->
+      <div id="question-card" class="bg-white p-4 md:p-5 rounded-b-2xl border border-slate-200 shadow-sm space-y-4 fade-enter">
+        <!-- Teks Pertanyaan -->
+        <div id="q-text" class="text-slate-800 text-base leading-relaxed font-medium space-y-2"></div>
+
+        <!-- Gambar Soal (Jika Ada) -->
+        <div id="q-image-wrap" class="hidden">
+          <img id="q-image" src="" alt="Ilustrasi Soal" class="max-h-64 mx-auto rounded-xl border border-slate-200 object-contain" />
+        </div>
+
+        <div class="divider my-1 text-xs text-slate-400">JAWABAN ANDA</div>
+
+        <!-- Wadah Dinamis 6 Jenis Soal -->
+        <div id="q-options-container" class="space-y-2.5"></div>
+      </div>
+    </div>
+
+    <!-- Sticky Bottom Navigation HP -->
+    <footer class="fixed bottom-0 left-0 right-0 z-30 bg-white border-t border-slate-200 px-3 py-2.5 shadow-lg">
+      <div class="max-w-xl mx-auto grid grid-cols-3 gap-2 items-center">
+        <button id="btn-prev" onclick="navSoal(-1)" class="btn btn-sm md:btn-md btn-outline border-slate-300 text-slate-700 font-bold">
+          ◀ Sebelumnya
+        </button>
+
+        <label class="btn btn-sm md:btn-md bg-amber-100 hover:bg-amber-200 text-amber-900 border-amber-300 font-bold flex items-center justify-center gap-1.5 cursor-pointer">
+          <input type="checkbox" id="chk-ragu" onchange="toggleRagu()" class="checkbox checkbox-xs checkbox-warning" />
+          <span>Ragu-ragu</span>
+        </label>
+
+        <button id="btn-next" onclick="navSoal(1)" class="btn btn-sm md:btn-md bg-blue-800 hover:bg-blue-900 text-white font-bold">
+          Selanjutnya ▶
+        </button>
+
+        <button id="btn-finish" onclick="confirmSubmitExam()" class="btn btn-sm md:btn-md bg-emerald-600 hover:bg-emerald-700 text-white font-bold hidden">
+          ✅ Kumpulkan
+        </button>
+      </div>
+    </footer>
+  </section>
+
+  <!-- ===================================================================== -->
+  <!-- 3. HALAMAN HASIL UJIAN MURID (NILAI TAMPIL + UNDUH PDF A4)            -->
+  <!-- ===================================================================== -->
+  <section id="view-result" class="hidden flex-grow items-center justify-center p-4">
+    <div class="card w-full max-w-md bg-white shadow-xl border border-slate-200 text-center p-6 space-y-4">
+      <div class="w-16 h-16 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center mx-auto text-3xl">
+        🏆
+      </div>
+      <div>
+        <h2 class="text-xl font-extrabold text-slate-800">Ujian Selesai Dikumpulkan!</h2>
+        <p id="res-bab" class="text-xs text-slate-500 mt-0.5">Bab Pembelajaran</p>
+      </div>
+
+      <!-- Lingkaran Nilai Akhir -->
+      <div class="bg-gradient-to-br from-blue-900 to-indigo-950 text-white rounded-2xl p-5 shadow-inner">
+        <span class="text-xs uppercase tracking-wider text-blue-200">Nilai Akhir Anda</span>
+        <div id="res-nilai" class="text-5xl font-black my-1 text-amber-300">100</div>
+        <p id="res-skor-detail" class="text-xs text-blue-200">Skor Perolehan: 0 / 0</p>
+      </div>
+
+      <!-- Tabel Identitas Murid -->
+      <div class="bg-slate-50 rounded-xl p-3.5 text-left text-xs space-y-1.5 border border-slate-200">
+        <div class="flex justify-between"><span class="text-slate-500">NISN / NIS:</span><span id="res-nisn" class="font-bold text-slate-800">-</span></div>
+        <div class="flex justify-between"><span class="text-slate-500">Nama Lengkap:</span><span id="res-nama" class="font-bold text-slate-800">-</span></div>
+        <div class="flex justify-between"><span class="text-slate-500">Kelas:</span><span id="res-kelas" class="font-bold text-slate-800">-</span></div>
+        <div class="flex justify-between"><span class="text-slate-500">Sekolah Asal:</span><span id="res-sekolah" class="font-bold text-slate-800">-</span></div>
+      </div>
+
+      <!-- Tombol Unduh Nilai PDF Format A4 & Kembali -->
+      <div class="space-y-2 pt-1">
+        <button onclick="unduhPdfHasilMurid()" class="btn bg-blue-800 hover:bg-blue-900 text-white w-full font-bold shadow-md">
+          📄 Unduh Laporan Nilai (PDF A4)
+        </button>
+        <button onclick="keluarKeBeranda()" class="btn btn-outline w-full font-bold">
+          🏠 Kembali ke Halaman Login
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================================================================== -->
+  <!-- 4. HALAMAN DASHBOARD ADMIN & SUPERADMIN (monggomembaca@gmail.com)     -->
+  <!-- ===================================================================== -->
+  <section id="view-admin" class="hidden flex-col min-h-screen bg-slate-100">
+    <!-- Topbar Admin -->
+    <header class="bg-slate-900 text-white px-4 py-3 shadow-md sticky top-0 z-30">
+      <div class="max-w-6xl mx-auto flex flex-wrap items-center justify-between gap-2">
+        <div class="flex items-center gap-2.5">
+          <span class="text-2xl">🛡️</span>
+          <div>
+            <div class="flex items-center gap-2">
+              <h1 class="font-extrabold text-base">PANEL ADMIN RUBEL EXAMBRO</h1>
+              <span id="adm-role-badge" class="badge badge-xs badge-warning font-bold">SUPERADMIN</span>
+            </div>
+            <p id="adm-email-display" class="text-xs text-slate-400">monggomembaca@gmail.com</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-2">
+          <button id="btn-adm-clear-cache" onclick="adminClearCache()" class="btn btn-xs bg-indigo-600 hover:bg-indigo-700 text-white border-0 hidden">
+            🔄 Segarkan Cache Soal
+          </button>
+          <button onclick="logoutAdmin()" class="btn btn-xs btn-error text-white">
+            Keluar
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <div class="max-w-6xl w-full mx-auto p-4 space-y-5 flex-grow">
+      <!-- Ringkasan Statistik -->
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
+          <div>
+            <span class="text-xs text-slate-500 font-semibold">Total Peserta Terdaftar</span>
+            <p id="stat-murid" class="text-2xl font-black text-slate-800">0</p>
+          </div>
+          <span class="text-3xl">👥</span>
+        </div>
+        <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
+          <div>
+            <span class="text-xs text-slate-500 font-semibold">Total Butir Soal (30 Bab)</span>
+            <p id="stat-soal" class="text-2xl font-black text-blue-800">0</p>
+          </div>
+          <span class="text-3xl">📚</span>
+        </div>
+        <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
+          <div>
+            <span class="text-xs text-slate-500 font-semibold">Rekap Nilai Masuk</span>
+            <p id="stat-rekap" class="text-2xl font-black text-emerald-700">0</p>
+          </div>
+          <span class="text-3xl">📊</span>
+        </div>
+      </div>
+
+      <!-- Navigasi Sub-Menu Admin (Admin Biasa Hanya Melihat Rekap Nilai Murid) -->
+      <div id="adm-tabs-container" class="tabs tabs-boxed bg-white p-1.5 border border-slate-200 rounded-xl">
+        <a id="adm-tab-rekap" onclick="switchAdminTab('rekap')" class="tab tab-active font-bold">📊 Rekap Nilai Murid</a>
+        <a id="adm-tab-bab" onclick="switchAdminTab('bab')" class="tab font-bold hidden">🔑 Kontrol 30 Token & Bab</a>
+        <a id="adm-tab-users" onclick="switchAdminTab('users')" class="tab font-bold hidden">👑 Kelola Admin (Superadmin)</a>
+      </div>
+
+      <!-- TAB 1: REKAP NILAI MURID (Filter Sekolah, Kelas, Bab + Unduh Rapor PDF Per Bab / Semua Bab) -->
+      <div id="adm-panel-rekap" class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <!-- Barisan Filter: Sekolah, Kelas, Bab, & Pencarian -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 w-full lg:w-auto flex-grow">
+            <select id="filter-rekap-sekolah" onchange="renderAdminRekap()" class="select select-sm select-bordered font-semibold w-full">
+              <option value="ALL">🏫 Semua Sekolah</option>
+            </select>
+            <select id="filter-rekap-kelas" onchange="renderAdminRekap()" class="select select-sm select-bordered font-semibold w-full">
+              <option value="ALL">🏷️ Semua Kelas</option>
+            </select>
+            <select id="filter-rekap-bab" onchange="renderAdminRekap()" class="select select-sm select-bordered font-semibold w-full">
+              <option value="ALL">📚 Semua Bab (1 - 30)</option>
+            </select>
+            <input type="text" id="filter-rekap-cari" oninput="renderAdminRekap()" placeholder="🔍 Cari Nama / NISN..." class="input input-sm input-bordered w-full" />
+          </div>
+
+          <button onclick="exportRekapCSV()" class="btn btn-sm bg-emerald-700 hover:bg-emerald-800 text-white font-bold shrink-0">
+            📥 Unduh Excel / CSV
+          </button>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="table table-zebra table-sm w-full">
+            <thead class="bg-slate-800 text-white text-xs">
+              <tr>
+                <th>No</th>
+                <th>Nama Murid</th>
+                <th>Kelas</th>
+                <th>Sekolah Asal</th>
+                <th>Bab Ujian</th>
+                <th>Skor</th>
+                <th>Nilai Akhir</th>
+                <th>Log Layar</th>
+                <th class="text-center">Unduh Rapor PDF (A4)</th>
+                <th>Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="tbody-rekap" class="text-xs"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- TAB 2: KONTROL 30 TOKEN & BAB (KHUSUS SUPERADMIN) -->
+      <div id="adm-panel-bab" class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 space-y-4 hidden">
+        <div class="flex items-center justify-between">
+          <h3 class="font-extrabold text-sm text-slate-700">Pengaturan 30 Token, Durasi & Status Aktif Bab (X, XI, XII)</h3>
+          <select id="filter-bab-jenjang" onchange="renderAdminBab()" class="select select-sm select-bordered font-bold">
+            <option value="ALL">Semua Jenjang (X, XI, XII)</option>
+            <option value="X">Kelas X (Bab 1-10)</option>
+            <option value="XI">Kelas XI (Bab 11-20)</option>
+            <option value="XII">Kelas XII (Bab 21-30)</option>
+          </select>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="table table-sm w-full">
+            <thead class="bg-slate-800 text-white text-xs">
+              <tr>
+                <th>Kode</th>
+                <th>Jenjang</th>
+                <th>Nama Bab</th>
+                <th>Token Ujian</th>
+                <th>Durasi (Menit)</th>
+                <th>Status</th>
+                <th>Simpan</th>
+              </tr>
+            </thead>
+            <tbody id="tbody-bab" class="text-xs"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- TAB 3: KELOLA ADMIN (KHUSUS SUPERADMIN monggomembaca@gmail.com) -->
+      <div id="adm-panel-users" class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 space-y-5 hidden">
+        <div class="bg-blue-50 border border-blue-200 rounded-xl p-4">
+          <h3 class="font-extrabold text-sm text-blue-950 mb-2">➕ Tambah / Perbarui Admin Baru</h3>
+          <div class="grid grid-cols-1 sm:grid-cols-4 gap-2.5">
+            <input type="email" id="new-adm-email" placeholder="Email Admin Baru" class="input input-sm input-bordered w-full" />
+            <input type="text" id="new-adm-nama" placeholder="Nama Lengkap Guru/Admin" class="input input-sm input-bordered w-full" />
+            <input type="text" id="new-adm-pin" placeholder="PIN Akses (misal: 123456)" class="input input-sm input-bordered w-full" />
+            <button onclick="addOrUpdateAdmin()" class="btn btn-sm bg-blue-800 hover:bg-blue-900 text-white font-bold">
+              Simpan Admin
+            </button>
+          </div>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="table table-zebra table-sm w-full">
+            <thead class="bg-slate-800 text-white text-xs">
+              <tr>
+                <th>Email Admin</th>
+                <th>Nama Admin</th>
+                <th>Level Akses</th>
+                <th>PIN Akses</th>
+                <th>Status</th>
+                <th>Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="tbody-admins" class="text-xs"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================================================================== -->
+  <!-- MODAL DRAWER DAFTAR NOMOR SOAL (DI LAYAR HP MURID)                    -->
+  <!-- ===================================================================== -->
+  <div id="modal-daftar-soal" class="fixed inset-0 z-50 bg-black/60 hidden items-end sm:items-center justify-center p-0 sm:p-4">
+    <div class="bg-white w-full max-w-md rounded-t-2xl sm:rounded-2xl p-5 max-h-[82vh] flex flex-col space-y-4">
+      <div class="flex items-center justify-between border-b pb-2.5">
+        <h3 class="font-extrabold text-base text-slate-800">Daftar Navigasi Nomor Soal</h3>
+        <button onclick="toggleDrawerSoal()" class="btn btn-xs btn-circle btn-ghost">✕</button>
+      </div>
+      <div class="flex items-center gap-3 text-[11px] font-semibold text-slate-600">
+        <span class="flex items-center gap-1"><span class="w-3 h-3 rounded bg-emerald-600 inline-block"></span> Sudah Dijawab</span>
+        <span class="flex items-center gap-1"><span class="w-3 h-3 rounded bg-amber-400 inline-block"></span> Ragu-ragu</span>
+        <span class="flex items-center gap-1"><span class="w-3 h-3 rounded bg-slate-200 inline-block"></span> Belum Dijawab</span>
+      </div>
+      <div id="grid-nomor-soal" class="grid grid-cols-5 gap-2 overflow-y-auto py-1"></div>
+      <button onclick="confirmSubmitExam()" class="btn bg-emerald-600 hover:bg-emerald-700 text-white w-full font-bold">
+        ✅ Selesai & Kumpulkan Jawaban
+      </button>
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- ENGINE JAVASCRIPT RUBEL EXAMBRO                                       -->
+  <!-- ===================================================================== -->
+  <script>
+    // TEMPELKAN URL WEB APP GOOGLE APPS SCRIPT ANDA DI SINI (Hanya dapat diubah oleh pemilik kode)
+    const DEFAULT_GAS_URL = 'https://script.google.com/macros/s/AKfycbzBcCycLdH5JN20EWAhnSXVqvxxTZBIBPjf2YxrY1iWPXLs_R9hR5hnaTiJk4V3QLiO/exec';
+
+    let state = {
+      murid: null,
+      ujian: null,
+      soalList: [],
+      jawaban: {},
+      ragu: {},
+      currentIdx: 0,
+      endTime: null,
+      timerInterval: null,
+      pelanggaran: 0,
+      isExamActive: false,
+      lastResult: null // Menyimpan hasil ujian terakhir untuk diunduh sebagai PDF A4 oleh murid
+    };
+
+    let adminState = {
+      email: '',
+      pin: '',
+      profile: null,
+      bab: [],
+      rekap: [],
+      admins: []
+    };
+
+    function switchLoginTab(mode) {
+      const isMurid = mode === 'murid';
+      document.getElementById('form-login-murid').classList.toggle('hidden', !isMurid);
+      document.getElementById('form-login-admin').classList.toggle('hidden', isMurid);
+      document.getElementById('tab-btn-murid').className = isMurid
+        ? 'py-2 text-sm font-bold rounded-lg bg-white text-blue-900 shadow-sm transition-all'
+        : 'py-2 text-sm font-bold rounded-lg text-slate-500 hover:text-slate-800 transition-all';
+      document.getElementById('tab-btn-admin').className = !isMurid
+        ? 'py-2 text-sm font-bold rounded-lg bg-white text-slate-900 shadow-sm transition-all'
+        : 'py-2 text-sm font-bold rounded-lg text-slate-500 hover:text-slate-800 transition-all';
+    }
+
+    async function callGasApi(payload) {
+      if (!DEFAULT_GAS_URL || !DEFAULT_GAS_URL.startsWith('http')) {
+        throw new Error('Konfigurasi DEFAULT_GAS_URL belum diisi pada kode sumber HTML.');
+      }
+      const res = await fetch(DEFAULT_GAS_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify(payload)
+      });
+      return await res.json();
+    }
+
+    // ========================================================================
+    // DETEKTOR OTOMATIS TEKS ARAB & HARAKAT
+    // ========================================================================
+    function formatTeksArabOtomatis(teks) {
+      if (!teks) return '';
+      const escaped = String(teks)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+
+      return escaped.split('\n').map(baris => {
+        const arabMatch = baris.match(/[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF]/g);
+        if (arabMatch && arabMatch.length > 8 && (arabMatch.length / baris.length) > 0.35) {
+          return `<span class="font-arab">${baris}</span>`;
+        }
+        return baris.replace(/([\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\s]{3,})/g, '<span class="font-arab-inline" dir="rtl">$1</span>');
+      }).join('<br/>');
+    }
+
+    // ========================================================================
+    // ALGORITMA PENGACAKAN FISHER-YATES (ACAK SOAL & ACAK OPSI)
+    // ========================================================================
+    function shuffleArray(arr) {
+      const copy = [...arr];
+      for (let i = copy.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
+      return copy;
+    }
+
+    function acakSoalDanOpsi(daftarSoalServer) {
+      const soalAcak = shuffleArray(daftarSoalServer);
+      return soalAcak.map(item => {
+        const cloned = JSON.parse(JSON.stringify(item));
+        if (['PG', 'PGK', 'URUT'].includes(cloned.tipe) && Array.isArray(cloned.opsi)) {
+          cloned.opsi = shuffleArray(cloned.opsi);
+        } else if (cloned.tipe === 'JODOH' && cloned.opsi) {
+          cloned.opsi.premis = shuffleArray(cloned.opsi.premis || []);
+          cloned.opsi.respon = shuffleArray(cloned.opsi.respon || []);
+        }
+        return cloned;
+      });
+    }
+
+    // ========================================================================
+    // LOGIN MURID & MULAI EXAMBROWSER
+    // ========================================================================
+    async function loginMurid() {
+      const nisn  = document.getElementById('input-nisn').value.trim();
+      const token = document.getElementById('input-token').value.trim().toUpperCase();
+      const btn   = document.getElementById('btn-start-exam');
+
+      if (!nisn || !token) {
+        alert('Mohon lengkapi NISN dan Token Ujian terlebih dahulu!');
+        return;
+      }
+
+      btn.disabled = true;
+      btn.innerHTML = '⏳ Memverifikasi & Mengunduh Soal...';
+
+      try {
+        const res = await callGasApi({ action: 'login', nisn, token });
+        if (res.status !== 'success') {
+          alert(res.message);
+          return;
+        }
+
+        const storageKey = `RUBEL_SESSION_${res.murid.nisn}_${res.ujian.kode_bab}`;
+        const savedSession = localStorage.getItem(storageKey);
+
+        if (savedSession) {
+          const parsed = JSON.parse(savedSession);
+          state.murid       = res.murid;
+          state.ujian       = res.ujian;
+          state.soalList    = parsed.soalList;
+          state.jawaban     = parsed.jawaban || {};
+          state.ragu        = parsed.ragu || {};
+          state.endTime     = parsed.endTime;
+          state.pelanggaran = parsed.pelanggaran || 0;
+        } else {
+          state.murid       = res.murid;
+          state.ujian       = res.ujian;
+          state.soalList    = acakSoalDanOpsi(res.soal);
+          state.jawaban     = {};
+          state.ragu        = {};
+          state.endTime     = Date.now() + (res.ujian.durasi * 60 * 1000);
+          state.pelanggaran = 0;
+          simpanSesiLokal();
+        }
+
+        state.currentIdx = 0;
+        state.isExamActive = true;
+
+        try {
+          if (document.documentElement.requestFullscreen) {
+            await document.documentElement.requestFullscreen();
+          }
+        } catch (e) {}
+
+        document.getElementById('view-login').classList.add('hidden');
+        document.getElementById('view-exam').classList.remove('hidden');
+        document.getElementById('view-exam').classList.add('flex');
+
+        document.getElementById('exam-student-name').textContent = `${state.murid.nama} (${state.murid.kelas})`;
+        document.getElementById('exam-chapter-title').textContent = state.ujian.nama_bab;
+
+        mulaiTimerUjian();
+        renderButirSoal();
+      } catch (err) {
+        alert(err.message);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '🚀 Mulai Kerjakan Ujian';
+      }
+    }
+
+    function simpanSesiLokal() {
+      if (!state.murid || !state.ujian) return;
+      const key = `RUBEL_SESSION_${state.murid.nisn}_${state.ujian.kode_bab}`;
+      localStorage.setItem(key, JSON.stringify({
+        soalList: state.soalList,
+        jawaban: state.jawaban,
+        ragu: state.ragu,
+        endTime: state.endTime,
+        pelanggaran: state.pelanggaran
+      }));
+    }
+
+    // ========================================================================
+    // RENDER 6 JENIS SOAL INTERAKTIF DI LAYAR HP
+    // ========================================================================
+    function renderButirSoal() {
+      const q = state.soalList[state.currentIdx];
+      if (!q) return;
+
+      document.getElementById('q-number-display').textContent = state.currentIdx + 1;
+      document.getElementById('exam-progress-badge').textContent = `${state.currentIdx + 1}/${state.soalList.length}`;
+      document.getElementById('chk-ragu').checked = !!state.ragu[q.id];
+
+      const mapNamaTipe = {
+        'PG': 'Pilihan Ganda (1 Jawaban)',
+        'PGK': 'PG Kompleks (Pilih > 1)',
+        'BS': 'Benar / Salah',
+        'URUT': 'Mengurutkan (Tap Urutan)',
+        'JODOH': 'Menjodohkan Pasangan',
+        'ISIAN': 'Uraian Singkat'
+      };
+      document.getElementById('q-type-badge').textContent = mapNamaTipe[q.tipe] || q.tipe;
+
+      document.getElementById('q-text').innerHTML = formatTeksArabOtomatis(q.soal);
+      const imgWrap = document.getElementById('q-image-wrap');
+      const imgEl   = document.getElementById('q-image');
+      if (q.gambar) {
+        imgEl.src = q.gambar;
+        imgWrap.classList.remove('hidden');
+      } else {
+        imgWrap.classList.add('hidden');
+      }
+
+      const container = document.getElementById('q-options-container');
+      container.innerHTML = '';
+      const jwbSekarang = state.jawaban[q.id];
+
+      // 1. PILIHAN GANDA (PG - 5 Opsi Diacak)
+      if (q.tipe === 'PG') {
+        const labelHuruf = ['A', 'B', 'C', 'D', 'E'];
+        q.opsi.forEach((opt, tampilIdx) => {
+          const dipilih = jwbSekarang !== undefined && Number(jwbSekarang) === Number(opt.idx);
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = `w-full text-left p-3.5 rounded-xl border-2 transition-all flex items-start gap-3 ${
+            dipilih ? 'border-blue-700 bg-blue-50/80 shadow-sm' : 'border-slate-200 hover:border-slate-300 bg-white'
+          }`;
+          btn.onclick = () => {
+            state.jawaban[q.id] = opt.idx;
+            simpanSesiLokal();
+            renderButirSoal();
+          };
+          btn.innerHTML = `
+            <span class="w-7 h-7 rounded-lg flex items-center justify-center font-extrabold text-xs shrink-0 ${
+              dipilih ? 'bg-blue-800 text-white' : 'bg-slate-100 text-slate-700'
+            }">${labelHuruf[tampilIdx] || '•'}</span>
+            <div class="text-sm font-medium text-slate-800 flex-grow">${formatTeksArabOtomatis(opt.teks)}</div>
+          `;
+          container.appendChild(btn);
+        });
+      }
+
+      // 2. PILIHAN GANDA KOMPLEKS (PGK - 5 Opsi Diacak)
+      else if (q.tipe === 'PGK') {
+        const arrDipilih = Array.isArray(jwbSekarang) ? jwbSekarang : [];
+        q.opsi.forEach(opt => {
+          const aktif = arrDipilih.includes(opt.idx);
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = `w-full text-left p-3.5 rounded-xl border-2 transition-all flex items-start gap-3 ${
+            aktif ? 'border-indigo-700 bg-indigo-50/80 shadow-sm' : 'border-slate-200 bg-white'
+          }`;
+          btn.onclick = () => {
+            let nextArr = [...arrDipilih];
+            if (aktif) {
+              nextArr = nextArr.filter(x => x !== opt.idx);
+            } else {
+              nextArr.push(opt.idx);
+            }
+            state.jawaban[q.id] = nextArr;
+            simpanSesiLokal();
+            renderButirSoal();
+          };
+          btn.innerHTML = `
+            <span class="w-6 h-6 rounded-md border-2 flex items-center justify-center text-xs font-bold shrink-0 mt-0.5 ${
+              aktif ? 'bg-indigo-700 border-indigo-700 text-white' : 'border-slate-300 bg-white'
+            }">${aktif ? '✓' : ''}</span>
+            <div class="text-sm font-medium text-slate-800 flex-grow">${formatTeksArabOtomatis(opt.teks)}</div>
+          `;
+          container.appendChild(btn);
+        });
+      }
+
+      // 3. BENAR - SALAH (BS)
+      else if (q.tipe === 'BS') {
+        const objBS = (typeof jwbSekarang === 'object' && jwbSekarang !== null) ? jwbSekarang : {};
+        q.opsi.forEach(opt => {
+          const valBaris = objBS[opt.idx];
+          const row = document.createElement('div');
+          row.className = 'p-3.5 rounded-xl border border-slate-200 bg-slate-50/60 space-y-2.5';
+          row.innerHTML = `
+            <div class="text-sm font-medium text-slate-800">${formatTeksArabOtomatis(opt.teks)}</div>
+            <div class="grid grid-cols-2 gap-2">
+              <button type="button" onclick="pilihBS('${q.id}', ${opt.idx}, 'B')" class="btn btn-sm font-bold ${
+                valBaris === 'B' ? 'bg-emerald-600 hover:bg-emerald-700 text-white border-0' : 'btn-outline border-slate-300 bg-white text-slate-700'
+              }">✓ BENAR</button>
+              <button type="button" onclick="pilihBS('${q.id}', ${opt.idx}, 'S')" class="btn btn-sm font-bold ${
+                valBaris === 'S' ? 'bg-rose-600 hover:bg-rose-700 text-white border-0' : 'btn-outline border-slate-300 bg-white text-slate-700'
+              }">✕ SALAH</button>
+            </div>
+          `;
+          container.appendChild(row);
+        });
+      }
+
+      // 4. MENGURUTKAN (URUT)
+      else if (q.tipe === 'URUT') {
+        const arrUrut = Array.isArray(jwbSekarang) ? jwbSekarang : [];
+        const info = document.createElement('div');
+        info.className = 'flex items-center justify-between text-xs text-slate-500 bg-slate-100 px-3 py-2 rounded-lg';
+        info.innerHTML = `
+          <span>Ketuk kartu sesuai urutan dari pertama hingga terakhir.</span>
+          <button type="button" onclick="resetUrutan('${q.id}')" class="text-rose-600 font-bold underline">Reset Urutan</button>
+        `;
+        container.appendChild(info);
+
+        q.opsi.forEach(opt => {
+          const pos = arrUrut.indexOf(opt.idx);
+          const sudahUrut = pos !== -1;
+          const card = document.createElement('button');
+          card.type = 'button';
+          card.className = `w-full text-left p-3.5 rounded-xl border-2 transition-all flex items-center gap-3 ${
+            sudahUrut ? 'border-blue-700 bg-blue-50/70' : 'border-slate-200 bg-white'
+          }`;
+          card.onclick = () => {
+            let nextUrut = [...arrUrut];
+            if (sudahUrut) {
+              nextUrut.splice(pos, 1);
+            } else {
+              nextUrut.push(opt.idx);
+            }
+            state.jawaban[q.id] = nextUrut;
+            simpanSesiLokal();
+            renderButirSoal();
+          };
+          card.innerHTML = `
+            <span class="w-8 h-8 rounded-full flex items-center justify-center font-black text-sm shrink-0 ${
+              sudahUrut ? 'bg-blue-800 text-white shadow' : 'bg-slate-200 text-slate-500'
+            }">${sudahUrut ? (pos + 1) : '?'}</span>
+            <div class="text-sm font-medium text-slate-800 flex-grow">${formatTeksArabOtomatis(opt.teks)}</div>
+          `;
+          container.appendChild(card);
+        });
+      }
+
+      // 5. MENJODOHKAN (JODOH)
+      else if (q.tipe === 'JODOH') {
+        const objJodoh = (typeof jwbSekarang === 'object' && jwbSekarang !== null) ? jwbSekarang : {};
+        const premisList = q.opsi?.premis || [];
+        const responList = q.opsi?.respon || [];
+
+        premisList.forEach((p, pVisualIdx) => {
+          const selectedResponIdx = objJodoh[p.idx];
+          const wrap = document.createElement('div');
+          wrap.className = 'p-3.5 rounded-xl border border-slate-200 bg-slate-50 space-y-2';
+
+          let optionsHtml = `<option value="">-- Pilih Pasangan yang Tepat --</option>`;
+          responList.forEach(r => {
+            const isSel = selectedResponIdx !== undefined && Number(selectedResponIdx) === Number(r.idx);
+            optionsHtml += `<option value="${r.idx}" ${isSel ? 'selected' : ''}>${r.teks}</option>`;
+          });
+
+          wrap.innerHTML = `
+            <div class="flex items-start gap-2">
+              <span class="badge badge-sm bg-blue-900 text-white font-bold mt-1">${pVisualIdx + 1}</span>
+              <div class="text-sm font-bold text-slate-800 flex-grow">${formatTeksArabOtomatis(p.teks)}</div>
+            </div>
+            <select onchange="pilihJodoh('${q.id}', ${p.idx}, this.value)" class="select select-bordered select-sm w-full font-semibold bg-white text-slate-800">
+              ${optionsHtml}
+            </select>
+          `;
+          container.appendChild(wrap);
+        });
+      }
+
+      // 6. URAIAN SINGKAT (ISIAN)
+      else if (q.tipe === 'ISIAN') {
+        const valIsian = jwbSekarang || '';
+        const wrap = document.createElement('div');
+        wrap.className = 'space-y-2';
+        wrap.innerHTML = `
+          <input type="text" id="input-isian-soal" value="${valIsian.replace(/"/g, '&quot;')}"
+            placeholder="Ketik jawaban singkat Anda di sini..."
+            oninput="simpanIsian('${q.id}', this.value)"
+            class="input input-bordered w-full font-bold text-base focus:border-blue-700" />
+          <p class="text-[11px] text-slate-400">Huruf besar dan kecil tidak berpengaruh pada penilaian.</p>
+        `;
+        container.appendChild(wrap);
+      }
+
+      document.getElementById('btn-prev').disabled = state.currentIdx === 0;
+      const isLast = state.currentIdx === state.soalList.length - 1;
+      document.getElementById('btn-next').classList.toggle('hidden', isLast);
+      document.getElementById('btn-finish').classList.toggle('hidden', !isLast);
+    }
+
+    function pilihBS(idSoal, idxBaris, nilai) {
+      if (typeof state.jawaban[idSoal] !== 'object' || state.jawaban[idSoal] === null) {
+        state.jawaban[idSoal] = {};
+      }
+      state.jawaban[idSoal][idxBaris] = nilai;
+      simpanSesiLokal();
+      renderButirSoal();
+    }
+
+    function resetUrutan(idSoal) {
+      delete state.jawaban[idSoal];
+      simpanSesiLokal();
+      renderButirSoal();
+    }
+
+    function pilihJodoh(idSoal, premisIdx, responVal) {
+      if (typeof state.jawaban[idSoal] !== 'object' || state.jawaban[idSoal] === null) {
+        state.jawaban[idSoal] = {};
+      }
+      if (responVal === '') {
+        delete state.jawaban[idSoal][premisIdx];
+      } else {
+        state.jawaban[idSoal][premisIdx] = Number(responVal);
+      }
+      simpanSesiLokal();
+    }
+
+    function simpanIsian(idSoal, teks) {
+      state.jawaban[idSoal] = teks;
+      simpanSesiLokal();
+    }
+
+    function navSoal(arah) {
+      const next = state.currentIdx + arah;
+      if (next >= 0 && next < state.soalList.length) {
+        state.currentIdx = next;
+        renderButirSoal();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    }
+
+    function toggleRagu() {
+      const q = state.soalList[state.currentIdx];
+      if (!q) return;
+      state.ragu[q.id] = document.getElementById('chk-ragu').checked;
+      simpanSesiLokal();
+    }
+
+    function apakahSoalSudahDijawab(q) {
+      const j = state.jawaban[q.id];
+      if (j === undefined || j === null || j === '') return false;
+      if (Array.isArray(j)) return j.length > 0;
+      if (typeof j === 'object') return Object.keys(j).length > 0;
+      return true;
+    }
+
+    function toggleDrawerSoal() {
+      const modal = document.getElementById('modal-daftar-soal');
+      const isHidden = modal.classList.contains('hidden');
+      if (isHidden) {
+        const grid = document.getElementById('grid-nomor-soal');
+        grid.innerHTML = '';
+        state.soalList.forEach((q, idx) => {
+          const terjawab = apakahSoalSudahDijawab(q);
+          const ragu     = !!state.ragu[q.id];
+          let warna      = 'bg-slate-200 text-slate-700';
+          if (ragu) warna = 'bg-amber-400 text-slate-900';
+          else if (terjawab) warna = 'bg-emerald-600 text-white';
+
+          const btn = document.createElement('button');
+          btn.className = `h-11 rounded-xl font-extrabold text-sm flex items-center justify-center ${warna} ${
+            idx === state.currentIdx ? 'ring-2 ring-blue-900 ring-offset-2' : ''
+          }`;
+          btn.textContent = idx + 1;
+          btn.onclick = () => {
+            state.currentIdx = idx;
+            toggleDrawerSoal();
+            renderButirSoal();
+          };
+          grid.appendChild(btn);
+        });
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+      } else {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+      }
+    }
+
+    // ========================================================================
+    // TIMER COUNTDOWN & SENSOR ANTI-CURANG
+    // ========================================================================
+    function mulaiTimerUjian() {
+      if (state.timerInterval) clearInterval(state.timerInterval);
+      state.timerInterval = setInterval(() => {
+        const sisaMs = state.endTime - Date.now();
+        if (sisaMs <= 0) {
+          clearInterval(state.timerInterval);
+          alert('⏰ Waktu ujian telah habis! Jawaban Anda akan dikumpulkan secara otomatis.');
+          submitExamNow();
+          return;
+        }
+        const totalDetik = Math.floor(sisaMs / 1000);
+        const menit = String(Math.floor(totalDetik / 60)).padStart(2, '0');
+        const detik = String(totalDetik % 60).padStart(2, '0');
+        document.getElementById('exam-timer').textContent = `${menit}:${detik}`;
+      }, 1000);
+    }
+
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden && state.isExamActive) {
+        state.pelanggaran++;
+        simpanSesiLokal();
+        const badge = document.getElementById('violation-badge');
+        badge.textContent = `⚠️ Pelanggaran: ${state.pelanggaran}/3`;
+        badge.classList.remove('hidden');
+
+        if (state.pelanggaran >= 3) {
+          alert('🚨 Anda telah keluar dari layar ujian sebanyak 3 kali. Sistem otomatis menghentikan dan mengumpulkan ujian Anda!');
+          submitExamNow();
+        } else {
+          alert(`⚠️ PERINGATAN EXAMBRO (${state.pelanggaran}/3):\nAnda terdeteksi keluar dari lembar ujian! Jika mencapai 3 kali, ujian otomatis dikunci.`);
+        }
+      }
+    });
+
+    // ========================================================================
+    // SUBMIT JAWABAN KE SERVER GAS & TAMPILKAN SKOR PARSIAL
+    // ========================================================================
+    function confirmSubmitExam() {
+      const belum = state.soalList.filter(q => !apakahSoalSudahDijawab(q)).length;
+      const pesan = belum > 0
+        ? `Masih ada ${belum} soal yang belum dijawab. Yakin ingin mengumpulkan sekarang?`
+        : `Seluruh soal sudah terjawab. Yakin ingin mengumpulkan jawaban sekarang?`;
+      if (confirm(pesan)) {
+        submitExamNow();
+      }
+    }
+
+    async function submitExamNow() {
+      state.isExamActive = false;
+      if (state.timerInterval) clearInterval(state.timerInterval);
+      document.getElementById('modal-daftar-soal').classList.add('hidden');
+
+      const btnFinish = document.getElementById('btn-finish');
+      btnFinish.disabled = true;
+      btnFinish.textContent = '⏳ Menghitung Nilai...';
+
+      try {
+        const res = await callGasApi({
+          action: 'submit',
+          murid: state.murid,
+          kode_bab: state.ujian.kode_bab,
+          nama_bab: state.ujian.nama_bab,
+          jawaban: state.jawaban,
+          pelanggaran: state.pelanggaran
+        });
+
+        if (res.status !== 'success') {
+          alert('Gagal mengirim jawaban: ' + res.message);
+          state.isExamActive = true;
+          return;
+        }
+
+        localStorage.removeItem(`RUBEL_SESSION_${state.murid.nisn}_${state.ujian.kode_bab}`);
+
+        const h = res.hasil;
+        state.lastResult = {
+          nisn: state.murid.nisn,
+          nama: h.nama,
+          kelas: h.kelas,
+          sekolah: h.sekolah,
+          kode_bab: state.ujian.kode_bab,
+          nama_bab: h.nama_bab,
+          skor: h.skor_perolehan,
+          maks: h.skor_maksimal,
+          nilai: h.nilai_akhir
+        };
+
+        document.getElementById('res-bab').textContent = h.nama_bab;
+        document.getElementById('res-nilai').textContent = h.nilai_akhir;
+        document.getElementById('res-skor-detail').textContent = `Skor Perolehan: ${h.skor_perolehan} dari Maksimal ${h.skor_maksimal}`;
+        document.getElementById('res-nisn').textContent = state.murid.nisn;
+        document.getElementById('res-nama').textContent = h.nama;
+        document.getElementById('res-kelas').textContent = h.kelas;
+        document.getElementById('res-sekolah').textContent = h.sekolah;
+
+        document.getElementById('view-exam').classList.add('hidden');
+        document.getElementById('view-result').classList.remove('hidden');
+        document.getElementById('view-result').classList.add('flex');
+
+        if (document.fullscreenElement && document.exitFullscreen) {
+          document.exitFullscreen().catch(() => {});
+        }
+      } catch (err) {
+        alert('Koneksi terputus saat mengirim nilai. Jawaban Anda tetap aman tersimpan di HP, silakan klik Kumpulkan lagi.');
+        state.isExamActive = true;
+      } finally {
+        btnFinish.disabled = false;
+        btnFinish.textContent = '✅ Kumpulkan';
+      }
+    }
+
+    function keluarKeBeranda() {
+      document.getElementById('view-result').classList.add('hidden');
+      document.getElementById('view-login').classList.remove('hidden');
+      document.getElementById('input-token').value = '';
+    }
+
+    // ========================================================================
+    // GENERATOR PDF FORMAT A4 RAPI (UNTUK MURID & ADMIN)
+    // ========================================================================
+    function getTanggalIndonesiaHariIni() {
+      const bulanIndo = [
+        'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+        'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+      ];
+      const now = new Date();
+      return `${now.getDate()} ${bulanIndo[now.getMonth()]} ${now.getFullYear()}`;
+    }
+
+    function predikatNilai(n) {
+      const num = Number(n);
+      if (num >= 90) return 'A (Sangat Baik)';
+      if (num >= 80) return 'B (Baik)';
+      if (num >= 70) return 'C (Cukup)';
+      return 'D (Perlu Bimbingan)';
+    }
+
+    /**
+     * Membuat dokumen PDF ukuran A4 Rapi
+     * @param {Object} identitas - { nisn, nama, kelas, sekolah }
+     * @param {Array} daftarBab - Array berisi { kode_bab, nama_bab, skor, maks, nilai }
+     * @param {String} judulDokumen - Judul laporan
+     */
+    function generatePdfRaporA4(identitas, daftarBab, judulDokumen) {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+
+      // Header Kop Rapor RUBEL EXAMBRO
+      doc.setFillColor(15, 23, 42); // Slate-900 / Biru Gelap
+      doc.rect(14, 12, 182, 22, 'F');
+
+      doc.setTextColor(255, 255, 255);
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(14);
+      doc.text('RUBEL EXAMBRO - LAPORAN HASIL ASESMEN DIGITAL', 105, 21, { align: 'center' });
+
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(9.5);
+      doc.text(judulDokumen.toUpperCase(), 105, 28, { align: 'center' });
+
+      // Box Identitas Peserta Didik
+      doc.setTextColor(15, 23, 42);
+      doc.setDrawColor(203, 213, 225);
+      doc.setFillColor(248, 250, 252);
+      doc.roundedRect(14, 39, 182, 28, 2, 2, 'FD');
+
+      doc.setFontSize(10);
+      doc.setFont('helvetica', 'bold');
+      doc.text('Nama Peserta Didik', 19, 46);
+      doc.text('NISN / NIS', 19, 53);
+      doc.text('Kelas', 19, 60);
+
+      doc.text(':', 58, 46);
+      doc.text(':', 58, 53);
+      doc.text(':', 58, 60);
+
+      doc.setFont('helvetica', 'normal');
+      doc.text(String(identitas.nama || '-'), 62, 46);
+      doc.text(String(identitas.nisn || '-'), 62, 53);
+      doc.text(String(identitas.kelas || '-'), 62, 60);
+
+      doc.setFont('helvetica', 'bold');
+      doc.text('Sekolah Asal', 115, 46);
+      doc.text('Jumlah Bab Diujikan', 115, 53);
+      doc.text('Tanggal Cetak', 115, 60);
+
+      doc.text(':', 152, 46);
+      doc.text(':', 152, 53);
+      doc.text(':', 152, 60);
+
+      const tglUnduh = getTanggalIndonesiaHariIni();
+      doc.setFont('helvetica', 'normal');
+      doc.text(String(identitas.sekolah || '-'), 156, 46);
+      doc.text(`${daftarBab.length} Bab`, 156, 53);
+      doc.text(tglUnduh, 156, 60);
+
+      // Tabel Rincian Nilai Bab
+      const rows = daftarBab.map((item, idx) => [
+        idx + 1,
+        item.kode_bab,
+        item.nama_bab,
+        `${item.skor} / ${item.maks}`,
+        Number(item.nilai).toFixed(2),
+        predikatNilai(item.nilai)
+      ]);
+
+      // Hitung Rata-Rata Nilai Akhir
+      const totalNilai = daftarBab.reduce((acc, cur) => acc + Number(cur.nilai || 0), 0);
+      const rataRata   = daftarBab.length > 0 ? (totalNilai / daftarBab.length).toFixed(2) : '0.00';
+
+      doc.autoTable({
+        startY: 73,
+        margin: { left: 14, right: 14 },
+        head: [['No', 'Kode Bab', 'Materi / Nama Bab Pembelajaran', 'Skor', 'Nilai Akhir', 'Predikat']],
+        body: rows,
+        foot: [[
+          { content: 'RATA-RATA CAPAIAN NILAI AKHIR', colSpan: 4, styles: { halign: 'right', fontStyle: 'bold' } },
+          { content: rataRata, styles: { halign: 'center', fontStyle: 'bold' } },
+          { content: predikatNilai(rataRata), styles: { halign: 'center', fontStyle: 'bold' } }
+        ]],
+        theme: 'grid',
+        headStyles: {
+          fillColor: [30, 58, 138],
+          textColor: 255,
+          fontStyle: 'bold',
+          halign: 'center',
+          fontSize: 9.5
+        },
+        bodyStyles: {
+          fontSize: 9,
+          textColor: [30, 41, 59],
+          valign: 'middle'
+        },
+        footStyles: {
+          fillColor: [241, 245, 249],
+          textColor: [15, 23, 42],
+          fontSize: 9.5
+        },
+        columnStyles: {
+          0: { halign: 'center', cellWidth: 11 },
+          1: { halign: 'center', cellWidth: 23, fontStyle: 'bold' },
+          2: { halign: 'left', cellWidth: 74 },
+          3: { halign: 'center', cellWidth: 22 },
+          4: { halign: 'center', cellWidth: 22, fontStyle: 'bold' },
+          5: { halign: 'center', cellWidth: 30 }
+        }
+      });
+
+      // Bagian Blok Tanda Tangan Guru Pengajar di Bawah Tabel
+      let finalY = doc.lastAutoTable.finalY + 16;
+      if (finalY > 240) {
+        doc.addPage();
+        finalY = 25;
+      }
+
+      const signX = 128; // Posisi rata kiri blok tanda tangan di sisi kanan halaman A4
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(10);
+      doc.setTextColor(15, 23, 42);
+
+      // Nama kota dikosongi dengan titik-titik agar ditulis manual, diikuti tanggal bulan tahun saat diunduh
+      doc.text(`..........................., ${tglUnduh}`, signX, finalY);
+      doc.setFont('helvetica', 'bold');
+      doc.text('Guru Pengajar,', signX, finalY + 6);
+
+      // Ruang kosong untuk tanda tangan & nama guru ditulis manual
+      doc.setFont('helvetica', 'normal');
+      doc.text('( ........................................................... )', signX, finalY + 32);
+      doc.setFontSize(9);
+      doc.text('NIP/NIY. ...............................................', signX, finalY + 37);
+
+      // Catatan Kaki Dokumen
+      doc.setFontSize(8);
+      doc.setTextColor(148, 163, 184);
+      doc.text('Dokumen ini diterbitkan secara resmi melalui Sistem Asesmen Digital RUBEL EXAMBRO.', 14, 287);
+
+      const safeName = String(identitas.nama || 'Siswa').replace(/[^a-zA-Z0-9]/g, '_');
+      const suffix   = daftarBab.length === 1 ? daftarBab[0].kode_bab : 'Rapor_Semua_Bab';
+      doc.save(`Rapor_RUBEL_${safeName}_${suffix}.pdf`);
+    }
+
+    // Fungsi Unduh PDF oleh Murid di Akhir Ujian
+    function unduhPdfHasilMurid() {
+      if (!state.lastResult) {
+        alert('Data hasil ujian tidak ditemukan.');
+        return;
+      }
+      const r = state.lastResult;
+      generatePdfRaporA4(
+        { nisn: r.nisn, nama: r.nama, kelas: r.kelas, sekolah: r.sekolah },
+        [{ kode_bab: r.kode_bab, nama_bab: r.nama_bab, skor: r.skor, maks: r.maks, nilai: r.nilai }],
+        `Laporan Nilai Hasil Ujian (${r.kode_bab})`
+      );
+    }
+
+    // Fungsi Unduh PDF Per Bab oleh Admin
+    function unduhPdfAdminPerBab(rowIndex) {
+      const item = adminState.rekap.find(r => Number(r.row_index) === Number(rowIndex));
+      if (!item) return;
+
+      generatePdfRaporA4(
+        { nisn: item.nisn, nama: item.nama, kelas: item.kelas, sekolah: item.sekolah },
+        [{ kode_bab: item.kode_bab, nama_bab: item.nama_bab, skor: item.skor, maks: item.maks, nilai: item.nilai }],
+        `Laporan Capaian Nilai Bab (${item.kode_bab})`
+      );
+    }
+
+    // Fungsi Unduh Rapor Keseluruhan Bab yang Telah Dikerjakan Murid oleh Admin
+    function unduhPdfAdminSemuaBabMurid(nisnTarget, namaTarget, sekolahTarget) {
+      const semuaMilikMurid = adminState.rekap.filter(r => {
+        if (nisnTarget && r.nisn) return String(r.nisn) === String(nisnTarget);
+        return r.nama === namaTarget && r.sekolah === sekolahTarget;
+      });
+
+      if (semuaMilikMurid.length === 0) {
+        alert('Data rekap bab murid ini tidak ditemukan.');
+        return;
+      }
+
+      // Urutkan berdasarkan Kode Bab (BAB_01, BAB_02, dst.)
+      const terurut = [...semuaMilikMurid].sort((a, b) => a.kode_bab.localeCompare(b.kode_bab));
+      const identitas = {
+        nisn: terurut[0].nisn,
+        nama: terurut[0].nama,
+        kelas: terurut[0].kelas,
+        sekolah: terurut[0].sekolah
+      };
+
+      generatePdfRaporA4(
+        identitas,
+        terurut,
+        'Rapor Kumulatif Seluruh Bab yang Telah Diujikan'
+      );
+    }
+
+    // ========================================================================
+    // DASHBOARD ADMIN & SUPERADMIN (monggomembaca@gmail.com)
+    // ========================================================================
+    async function loginAdmin() {
+      const email = document.getElementById('input-admin-email').value.trim().toLowerCase();
+      const pin   = document.getElementById('input-admin-pin').value.trim();
+      const btn   = document.getElementById('btn-login-admin');
+
+      if (!email || !pin) {
+        alert('Masukkan Email Admin dan PIN terlebih dahulu!');
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = '⏳ Memuat Dashboard...';
+
+      try {
+        const res = await callGasApi({ action: 'admin_login', email, pin });
+        if (res.status !== 'success') {
+          alert(res.message);
+          return;
+        }
+
+        adminState.email = email;
+        adminState.pin   = pin;
+        terapkanDataDashboardAdmin(res);
+
+        document.getElementById('view-login').classList.add('hidden');
+        document.getElementById('view-admin').classList.remove('hidden');
+        document.getElementById('view-admin').classList.add('flex');
+      } catch (err) {
+        alert(err.message);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = '🔓 Masuk Dashboard Admin';
+      }
+    }
+
+    function terapkanDataDashboardAdmin(res) {
+      adminState.profile = res.admin;
+      adminState.bab     = res.bab || [];
+      adminState.rekap   = res.rekap || [];
+      adminState.admins  = res.admins || [];
+
+      document.getElementById('adm-email-display').textContent = `${res.admin.nama} (${res.admin.email})`;
+      document.getElementById('adm-role-badge').textContent = res.admin.role;
+      document.getElementById('stat-murid').textContent = res.stats.total_murid;
+      document.getElementById('stat-soal').textContent = res.stats.total_soal;
+      document.getElementById('stat-rekap').textContent = res.stats.total_rekap;
+
+      // HAK AKSES ROLE: Admin selain SUPERADMIN hanya melihat menu Rekap Nilai Murid
+      const isSuper = res.admin.role === 'SUPERADMIN';
+      document.getElementById('adm-tab-bab').classList.toggle('hidden', !isSuper);
+      document.getElementById('adm-tab-users').classList.toggle('hidden', !isSuper);
+      document.getElementById('btn-adm-clear-cache').classList.toggle('hidden', !isSuper);
+
+      if (!isSuper) {
+        switchAdminTab('rekap');
+      }
+
+      // Populate Filter Sekolah secara dinamis dari data rekap
+      const selSekolah = document.getElementById('filter-rekap-sekolah');
+      const prevSekolah = selSekolah.value;
+      const unikSekolah = [...new Set(adminState.rekap.map(r => r.sekolah).filter(Boolean))].sort();
+      selSekolah.innerHTML = `<option value="ALL">🏫 Semua Sekolah</option>`;
+      unikSekolah.forEach(s => {
+        selSekolah.innerHTML += `<option value="${s.replace(/"/g, '&quot;')}">${s}</option>`;
+      });
+      if (unikSekolah.includes(prevSekolah)) selSekolah.value = prevSekolah;
+
+      // Populate Filter Kelas secara dinamis dari data rekap
+      const selKelas = document.getElementById('filter-rekap-kelas');
+      const prevKelas = selKelas.value;
+      const unikKelas = [...new Set(adminState.rekap.map(r => r.kelas).filter(Boolean))].sort();
+      selKelas.innerHTML = `<option value="ALL">🏷️ Semua Kelas</option>`;
+      unikKelas.forEach(k => {
+        selKelas.innerHTML += `<option value="${k.replace(/"/g, '&quot;')}">${k}</option>`;
+      });
+      if (unikKelas.includes(prevKelas)) selKelas.value = prevKelas;
+
+      // Populate Filter Bab
+      const selBab = document.getElementById('filter-rekap-bab');
+      const prevBab = selBab.value;
+      selBab.innerHTML = `<option value="ALL">📚 Semua Bab (1 - 30)</option>`;
+      adminState.bab.forEach(b => {
+        selBab.innerHTML += `<option value="${b.kode_bab}">${b.kode_bab} - ${b.nama_bab}</option>`;
+      });
+      selBab.value = prevBab || 'ALL';
+
+      renderAdminRekap();
+      if (isSuper) {
+        renderAdminBab();
+        renderAdminUsers();
+      }
+    }
+
+    function switchAdminTab(tab) {
+      const isSuper = adminState.profile && adminState.profile.role === 'SUPERADMIN';
+      if (!isSuper && tab !== 'rekap') return;
+
+      ['rekap', 'bab', 'users'].forEach(t => {
+        document.getElementById(`adm-panel-${t}`).classList.toggle('hidden', t !== tab);
+        document.getElementById(`adm-tab-${t}`).classList.toggle('tab-active', t === tab);
+      });
+    }
+
+    function getFilteredAdminRekap() {
+      const filterSekolah = document.getElementById('filter-rekap-sekolah').value;
+      const filterKelas   = document.getElementById('filter-rekap-kelas').value;
+      const filterBab     = document.getElementById('filter-rekap-bab').value;
+      const filterCari    = document.getElementById('filter-rekap-cari').value.trim().toLowerCase();
+
+      return adminState.rekap.filter(r => {
+        const cocokSekolah = filterSekolah === 'ALL' || r.sekolah === filterSekolah;
+        const cocokKelas   = filterKelas === 'ALL' || r.kelas === filterKelas;
+        const cocokBab     = filterBab === 'ALL' || r.kode_bab === filterBab;
+        const cocokCari    = !filterCari ||
+          r.nama.toLowerCase().includes(filterCari) ||
+          r.nisn.toLowerCase().includes(filterCari) ||
+          r.kelas.toLowerCase().includes(filterCari) ||
+          r.sekolah.toLowerCase().includes(filterCari);
+        return cocokSekolah && cocokKelas && cocokBab && cocokCari;
+      });
+    }
+
+    function renderAdminRekap() {
+      const tbody    = document.getElementById('tbody-rekap');
+      tbody.innerHTML = '';
+      const filtered = getFilteredAdminRekap();
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="10" class="text-center py-6 text-slate-400">Belum ada data nilai ujian yang sesuai dengan filter.</td></tr>`;
+        return;
+      }
+
+      filtered.forEach((r, idx) => {
+        const safeNisn    = String(r.nisn || '').replace(/'/g, "\\'");
+        const safeNama    = String(r.nama || '').replace(/'/g, "\\'");
+        const safeSekolah = String(r.sekolah || '').replace(/'/g, "\\'");
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td class="font-bold">${idx + 1}</td>
+          <td class="font-bold text-slate-800">${r.nama}<br/><span class="text-[10px] text-slate-400">NISN: ${r.nisn}</span></td>
+          <td><span class="badge badge-sm badge-outline font-bold">${r.kelas}</span></td>
+          <td>${r.sekolah}</td>
+          <td><span class="font-bold text-blue-900">${r.kode_bab}</span></td>
+          <td>${r.skor} / ${r.maks}</td>
+          <td><span class="badge badge-md bg-emerald-700 text-white font-extrabold">${r.nilai}</span></td>
+          <td class="text-rose-600 font-semibold">${r.pelanggaran}</td>
+          <td class="text-center">
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-1">
+              <button onclick="unduhPdfAdminPerBab(${r.row_index})" class="btn btn-xs bg-blue-800 hover:bg-blue-900 text-white border-0" title="Unduh Nilai Bab Ini (PDF A4)">
+                📄 Bab Ini
+              </button>
+              <button onclick="unduhPdfAdminSemuaBabMurid('${safeNisn}', '${safeNama}', '${safeSekolah}')" class="btn btn-xs bg-indigo-700 hover:bg-indigo-800 text-white border-0" title="Unduh Rapor Seluruh Bab yang Dikerjakan Murid Ini (PDF A4)">
+                📑 Semua Bab
+              </button>
+            </div>
+          </td>
+          <td>
+            <button onclick="hapusRekapNilai(${r.row_index})" class="btn btn-xs btn-error text-white">Hapus</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function renderAdminBab() {
+      const jenjang = document.getElementById('filter-bab-jenjang').value;
+      const tbody   = document.getElementById('tbody-bab');
+      tbody.innerHTML = '';
+
+      adminState.bab
+        .filter(b => jenjang === 'ALL' || b.jenjang === jenjang)
+        .forEach(b => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td class="font-mono font-bold">${b.kode_bab}</td>
+            <td><span class="badge badge-sm font-bold">${b.jenjang}</span></td>
+            <td><input type="text" id="nama-${b.kode_bab}" value="${b.nama_bab}" class="input input-xs input-bordered w-full min-w-[200px]" /></td>
+            <td><input type="text" id="token-${b.kode_bab}" value="${b.token}" class="input input-xs input-bordered w-24 uppercase font-extrabold text-center" /></td>
+            <td><input type="number" id="dur-${b.kode_bab}" value="${b.durasi}" class="input input-xs input-bordered w-16 text-center" /></td>
+            <td>
+              <select id="stat-${b.kode_bab}" class="select select-xs select-bordered font-bold ${b.status === 'AKTIF' ? 'text-emerald-700' : 'text-rose-600'}">
+                <option value="AKTIF" ${b.status === 'AKTIF' ? 'selected' : ''}>AKTIF</option>
+                <option value="NONAKTIF" ${b.status !== 'AKTIF' ? 'selected' : ''}>TUTUP</option>
+              </select>
+            </td>
+            <td>
+              <button onclick="simpanKonfigBab('${b.kode_bab}')" class="btn btn-xs bg-blue-800 text-white">Simpan</button>
+            </td>
+          `;
+          tbody.appendChild(tr);
+        });
+    }
+
+    function renderAdminUsers() {
+      const tbody = document.getElementById('tbody-admins');
+      tbody.innerHTML = '';
+      adminState.admins.forEach(a => {
+        const isPrimarySuper = a.email.toLowerCase() === 'monggomembaca@gmail.com';
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td class="font-bold">${a.email}</td>
+          <td>${a.nama}</td>
+          <td><span class="badge badge-xs ${a.role === 'SUPERADMIN' ? 'badge-warning' : 'badge-info'} font-bold">${a.role}</span></td>
+          <td class="font-mono">${a.pin}</td>
+          <td><span class="badge badge-xs badge-success text-white">${a.status}</span></td>
+          <td>
+            ${isPrimarySuper ? '<span class="text-[11px] text-slate-400">Owner Utama</span>' : `<button onclick="hapusAdmin('${a.email}')" class="btn btn-xs btn-error text-white">Hapus</button>`}
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    async function simpanKonfigBab(kodeBab) {
+      const nama_bab = document.getElementById(`nama-${kodeBab}`).value;
+      const token    = document.getElementById(`token-${kodeBab}`).value;
+      const durasi   = document.getElementById(`dur-${kodeBab}`).value;
+      const status   = document.getElementById(`stat-${kodeBab}`).value;
+
+      const res = await callGasApi({
+        action: 'admin_action',
+        sub_action: 'update_bab',
+        email: adminState.email,
+        pin: adminState.pin,
+        kode_bab: kodeBab,
+        nama_bab, token, durasi, status
+      });
+
+      if (res.status === 'success') {
+        terapkanDataDashboardAdmin(res);
+        alert(`Konfigurasi ${kodeBab} berhasil diperbarui!`);
+      } else {
+        alert(res.message);
+      }
+    }
+
+    async function addOrUpdateAdmin() {
+      const target_email = document.getElementById('new-adm-email').value.trim();
+      const target_nama  = document.getElementById('new-adm-nama').value.trim();
+      const target_pin   = document.getElementById('new-adm-pin').value.trim();
+
+      if (!target_email || !target_nama || !target_pin) {
+        alert('Email, Nama, dan PIN Admin wajib diisi!');
+        return;
+      }
+
+      const res = await callGasApi({
+        action: 'admin_action',
+        sub_action: 'add_admin',
+        email: adminState.email,
+        pin: adminState.pin,
+        target_email, target_nama, target_pin,
+        target_role: 'ADMIN'
+      });
+
+      if (res.status === 'success') {
+        document.getElementById('new-adm-email').value = '';
+        document.getElementById('new-adm-nama').value  = '';
+        document.getElementById('new-adm-pin').value   = '';
+        terapkanDataDashboardAdmin(res);
+        alert('Data Admin berhasil disimpan!');
+      } else {
+        alert(res.message);
+      }
+    }
+
+    async function hapusAdmin(targetEmail) {
+      if (!confirm(`Hapus akses admin untuk ${targetEmail}?`)) return;
+      const res = await callGasApi({
+        action: 'admin_action',
+        sub_action: 'delete_admin',
+        email: adminState.email,
+        pin: adminState.pin,
+        target_email: targetEmail
+      });
+      if (res.status === 'success') terapkanDataDashboardAdmin(res);
+      else alert(res.message);
+    }
+
+    async function hapusRekapNilai(rowIndex) {
+      if (!confirm('Hapus data nilai ini agar murid dapat mengulang ujian?')) return;
+      const res = await callGasApi({
+        action: 'admin_action',
+        sub_action: 'delete_rekap',
+        email: adminState.email,
+        pin: adminState.pin,
+        row_index: rowIndex
+      });
+      if (res.status === 'success') terapkanDataDashboardAdmin(res);
+    }
+
+    async function adminClearCache() {
+      const res = await callGasApi({
+        action: 'admin_action',
+        sub_action: 'clear_cache',
+        email: adminState.email,
+        pin: adminState.pin
+      });
+      if (res.status === 'success') alert('Cache Bank Soal 30 Bab berhasil disegarkan!');
+    }
+
+    function exportRekapCSV() {
+      const dataExport = getFilteredAdminRekap();
+      if (dataExport.length === 0) {
+        alert('Belum ada data nilai pada filter ini untuk diunduh.');
+        return;
+      }
+      const headers = ['NISN', 'Nama Murid', 'Kelas', 'Sekolah Asal', 'Kode Bab', 'Nama Bab', 'Skor Perolehan', 'Skor Maksimal', 'Nilai Akhir', 'Log Pelanggaran'];
+      const rows = dataExport.map(r => [
+        `"${r.nisn}"`, `"${r.nama}"`, `"${r.kelas}"`, `"${r.sekolah}"`,
+        `"${r.kode_bab}"`, `"${r.nama_bab}"`, r.skor, r.maks, r.nilai, `"${r.pelanggaran}"`
+      ]);
+      const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map(e => e.join(','))].join('\n');
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement('a');
+      link.setAttribute('href', encodedUri);
+      link.setAttribute('download', `Rekap_Nilai_RUBEL_EXAMBRO.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    function logoutAdmin() {
+      adminState = { email: '', pin: '', profile: null, bab: [], rekap: [], admins: [] };
+      document.getElementById('view-admin').classList.add('hidden');
+      document.getElementById('view-login').classList.remove('hidden');
+    }
+  </script>
+</body>
+</html>
