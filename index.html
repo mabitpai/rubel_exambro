@@ -25,6 +25,11 @@
       user-select: none;
       touch-action: manipulation;
     }
+    /* Izinkan seleksi teks di area input form admin */
+    input, textarea, select {
+      -webkit-user-select: text !important;
+      user-select: text !important;
+    }
     /* Styling Khusus Teks Arab agar Harakat Jelas & Tidak Bertumpuk */
     .font-arab {
       font-family: 'Amiri', serif;
@@ -42,7 +47,6 @@
       line-height: 2.2rem;
       padding: 0 0.25rem;
     }
-    /* Animasi Transisi Soal */
     .fade-enter {
       animation: fadeIn 0.22s ease-out forwards;
     }
@@ -59,7 +63,6 @@
   <!-- ===================================================================== -->
   <main id="view-login" class="flex-grow flex items-center justify-center p-4">
     <div class="card w-full max-w-md bg-white shadow-xl border border-slate-200 overflow-hidden">
-      <!-- Header Brand RUBEL EXAMBRO (Tanpa Tombol Gerigi Server API) -->
       <div class="bg-gradient-to-br from-blue-900 via-indigo-900 to-slate-900 text-white p-6 text-center relative">
         <div class="w-16 h-16 rounded-2xl bg-white/10 backdrop-blur-md flex items-center justify-center mx-auto mb-3 border border-white/20 shadow-inner">
           <span class="text-3xl">🛡️</span>
@@ -125,7 +128,6 @@
   <!-- 2. HALAMAN LEMBAR UJIAN MURID (SINGLE-QUESTION EXAMBROWSER)           -->
   <!-- ===================================================================== -->
   <section id="view-exam" class="hidden flex-col min-h-screen bg-slate-100">
-    <!-- Sticky Topbar Exambro -->
     <header class="sticky top-0 z-30 bg-blue-950 text-white shadow-md px-3 py-2.5">
       <div class="max-w-xl mx-auto flex items-center justify-between gap-2">
         <div class="truncate">
@@ -137,12 +139,10 @@
         </div>
 
         <div class="flex items-center gap-2 shrink-0">
-          <!-- Indikator Timer -->
           <div class="bg-blue-900/90 border border-blue-700 px-3 py-1 rounded-xl text-center">
             <span class="block text-[9px] uppercase text-blue-300 leading-none">Sisa Waktu</span>
             <span id="exam-timer" class="font-mono font-extrabold text-sm md:text-base text-amber-300">45:00</span>
           </div>
-          <!-- Tombol Daftar Nomor Soal -->
           <button onclick="toggleDrawerSoal()" class="btn btn-sm bg-white text-blue-950 hover:bg-blue-50 font-bold border-0">
             📋 <span id="exam-progress-badge">1/10</span>
           </button>
@@ -150,9 +150,7 @@
       </div>
     </header>
 
-    <!-- Area Konten Single Soal -->
     <div class="flex-grow max-w-xl w-full mx-auto p-3 pb-28">
-      <!-- Bar Informasi Nomor & Jenis Soal -->
       <div class="flex items-center justify-between bg-white px-4 py-2.5 rounded-t-2xl border border-b-0 border-slate-200 shadow-sm">
         <div class="flex items-center gap-2">
           <span class="bg-blue-900 text-white font-extrabold text-xs px-2.5 py-1 rounded-lg">
@@ -163,24 +161,19 @@
         <span id="violation-badge" class="text-[11px] font-bold text-rose-600 hidden">⚠️ Pelanggaran: 0/3</span>
       </div>
 
-      <!-- Kartu Butir Soal & Pilihan Interaktif -->
       <div id="question-card" class="bg-white p-4 md:p-5 rounded-b-2xl border border-slate-200 shadow-sm space-y-4 fade-enter">
-        <!-- Teks Pertanyaan -->
         <div id="q-text" class="text-slate-800 text-base leading-relaxed font-medium space-y-2"></div>
 
-        <!-- Gambar Soal (Jika Ada) -->
         <div id="q-image-wrap" class="hidden">
           <img id="q-image" src="" alt="Ilustrasi Soal" class="max-h-64 mx-auto rounded-xl border border-slate-200 object-contain" />
         </div>
 
         <div class="divider my-1 text-xs text-slate-400">JAWABAN ANDA</div>
 
-        <!-- Wadah Dinamis 6 Jenis Soal -->
         <div id="q-options-container" class="space-y-2.5"></div>
       </div>
     </div>
 
-    <!-- Sticky Bottom Navigation HP -->
     <footer class="fixed bottom-0 left-0 right-0 z-30 bg-white border-t border-slate-200 px-3 py-2.5 shadow-lg">
       <div class="max-w-xl mx-auto grid grid-cols-3 gap-2 items-center">
         <button id="btn-prev" onclick="navSoal(-1)" class="btn btn-sm md:btn-md btn-outline border-slate-300 text-slate-700 font-bold">
@@ -216,14 +209,12 @@
         <p id="res-bab" class="text-xs text-slate-500 mt-0.5">Bab Pembelajaran</p>
       </div>
 
-      <!-- Lingkaran Nilai Akhir -->
       <div class="bg-gradient-to-br from-blue-900 to-indigo-950 text-white rounded-2xl p-5 shadow-inner">
         <span class="text-xs uppercase tracking-wider text-blue-200">Nilai Akhir Anda</span>
         <div id="res-nilai" class="text-5xl font-black my-1 text-amber-300">100</div>
         <p id="res-skor-detail" class="text-xs text-blue-200">Skor Perolehan: 0 / 0</p>
       </div>
 
-      <!-- Tabel Identitas Murid -->
       <div class="bg-slate-50 rounded-xl p-3.5 text-left text-xs space-y-1.5 border border-slate-200">
         <div class="flex justify-between"><span class="text-slate-500">NISN / NIS:</span><span id="res-nisn" class="font-bold text-slate-800">-</span></div>
         <div class="flex justify-between"><span class="text-slate-500">Nama Lengkap:</span><span id="res-nama" class="font-bold text-slate-800">-</span></div>
@@ -231,7 +222,6 @@
         <div class="flex justify-between"><span class="text-slate-500">Sekolah Asal:</span><span id="res-sekolah" class="font-bold text-slate-800">-</span></div>
       </div>
 
-      <!-- Tombol Unduh Nilai PDF Format A4 & Kembali -->
       <div class="space-y-2 pt-1">
         <button onclick="unduhPdfHasilMurid()" class="btn bg-blue-800 hover:bg-blue-900 text-white w-full font-bold shadow-md">
           📄 Unduh Laporan Nilai (PDF A4)
@@ -298,16 +288,16 @@
       </div>
 
       <!-- Navigasi Sub-Menu Admin (Admin Biasa Hanya Melihat Rekap Nilai Murid) -->
-      <div id="adm-tabs-container" class="tabs tabs-boxed bg-white p-1.5 border border-slate-200 rounded-xl">
+      <div id="adm-tabs-container" class="tabs tabs-boxed bg-white p-1.5 border border-slate-200 rounded-xl flex flex-wrap">
         <a id="adm-tab-rekap" onclick="switchAdminTab('rekap')" class="tab tab-active font-bold">📊 Rekap Nilai Murid</a>
+        <a id="adm-tab-soal" onclick="switchAdminTab('soal')" class="tab font-bold hidden">📝 Kelola Bank Soal</a>
         <a id="adm-tab-bab" onclick="switchAdminTab('bab')" class="tab font-bold hidden">🔑 Kontrol 30 Token & Bab</a>
         <a id="adm-tab-users" onclick="switchAdminTab('users')" class="tab font-bold hidden">👑 Kelola Admin (Superadmin)</a>
       </div>
 
-      <!-- TAB 1: REKAP NILAI MURID (Filter Sekolah, Kelas, Bab + Unduh Rapor PDF Per Bab / Semua Bab) -->
+      <!-- TAB 1: REKAP NILAI MURID -->
       <div id="adm-panel-rekap" class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 space-y-4">
         <div class="flex flex-wrap items-center justify-between gap-2">
-          <!-- Barisan Filter: Sekolah, Kelas, Bab, & Pencarian -->
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 w-full lg:w-auto flex-grow">
             <select id="filter-rekap-sekolah" onchange="renderAdminRekap()" class="select select-sm select-bordered font-semibold w-full">
               <option value="ALL">🏫 Semua Sekolah</option>
@@ -347,7 +337,138 @@
         </div>
       </div>
 
-      <!-- TAB 2: KONTROL 30 TOKEN & BAB (KHUSUS SUPERADMIN) -->
+      <!-- TAB 2: KELOLA BANK SOAL - MODE FORM VISUAL (KHUSUS SUPERADMIN) -->
+      <div id="adm-panel-soal" class="space-y-5 hidden">
+        <!-- Form Visual Input / Edit Soal -->
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 space-y-4">
+          <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200 pb-3">
+            <div>
+              <h3 id="form-soal-title" class="font-extrabold text-base text-blue-950">➕ Tambah Butir Soal Baru (Form Visual)</h3>
+              <p class="text-xs text-slate-500">Data soal yang disimpan otomatis tertulis ke Sheet <b>Bank_Soal</b> di Google Spreadsheet.</p>
+            </div>
+            <button id="btn-batal-edit-soal" onclick="resetFormVisualSoal()" class="btn btn-xs btn-outline btn-error hidden">
+              ✕ Batal Edit (Buat Baru)
+            </button>
+          </div>
+
+          <input type="hidden" id="vs-row-index" value="0" />
+
+          <!-- Baris Konfigurasi Soal: Bab, Jenis Soal, Bobot Skor, ID Soal -->
+          <div class="grid grid-cols-1 sm:grid-cols-4 gap-3">
+            <div class="form-control">
+              <label class="label py-1"><span class="label-text text-xs font-bold">Pilih Bab (1 - 30)</span></label>
+              <select id="vs-kode-bab" onchange="sinkronFilterBabSoal()" class="select select-sm select-bordered font-bold"></select>
+            </div>
+            <div class="form-control">
+              <label class="label py-1"><span class="label-text text-xs font-bold">Jenis Soal (6 Tipe)</span></label>
+              <select id="vs-tipe" onchange="renderVisualOpsiBuilder()" class="select select-sm select-bordered font-bold text-blue-900">
+                <option value="PG">PG (Pilihan Ganda 5 Opsi)</option>
+                <option value="PGK">PGK (PG Kompleks 5 Opsi)</option>
+                <option value="BS">BS (Benar / Salah Majemuk)</option>
+                <option value="URUT">URUT (Mengurutkan Item)</option>
+                <option value="JODOH">JODOH (Menjodohkan Pasangan)</option>
+                <option value="ISIAN">ISIAN (Uraian Singkat)</option>
+              </select>
+            </div>
+            <div class="form-control">
+              <label class="label py-1"><span class="label-text text-xs font-bold">Bobot Skor Maksimal</span></label>
+              <input type="number" id="vs-bobot" value="2" min="1" class="input input-sm input-bordered font-bold" />
+            </div>
+            <div class="form-control">
+              <label class="label py-1"><span class="label-text text-xs font-bold">ID Soal (Otomatis/Kustom)</span></label>
+              <input type="text" id="vs-id-soal" placeholder="Otomatis (misal: S007)" class="input input-sm input-bordered font-mono" />
+            </div>
+          </div>
+
+          <!-- Input Teks Pertanyaan & URL Gambar + Live Preview Mushaf Arab -->
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <div class="space-y-3">
+              <div class="form-control">
+                <label class="label py-1"><span class="label-text text-xs font-bold">Teks Pertanyaan / Pokok Soal (Mendukung Teks Arab & Enter)</span></label>
+                <textarea id="vs-teks-soal" rows="4" oninput="updateLivePreviewSoal()" placeholder="Ketik pertanyaan atau tempelkan ayat/hadis di sini..." class="textarea textarea-bordered w-full text-sm leading-relaxed"></textarea>
+              </div>
+              <div class="form-control">
+                <label class="label py-1"><span class="label-text text-xs font-bold">Link Gambar Google Drive / URL Gambar (Opsional)</span></label>
+                <input type="url" id="vs-gambar-url" oninput="updateLivePreviewSoal()" placeholder="https://drive.google.com/file/d/.../view" class="input input-sm input-bordered w-full font-mono text-xs" />
+              </div>
+            </div>
+
+            <!-- Kotak Pratinjau Tampilan di HP Murid -->
+            <div class="bg-slate-50 rounded-xl p-3.5 border border-slate-200 flex flex-col justify-between">
+              <div>
+                <span class="badge badge-xs bg-slate-800 text-white font-bold mb-2">👁️ PRATINJAU TAMPILAN SOAL & HARAKAT ARAB</span>
+                <div id="vs-live-preview-text" class="text-sm text-slate-800 min-h-[70px] bg-white p-3 rounded-lg border border-slate-200">
+                  <span class="text-slate-400 italic text-xs">Pratinjau teks soal akan tampil di sini...</span>
+                </div>
+                <div id="vs-live-preview-img-wrap" class="mt-2 hidden text-center">
+                  <img id="vs-live-preview-img" src="" alt="Preview Gambar" class="max-h-36 mx-auto rounded-lg border border-slate-200 object-contain" />
+                </div>
+              </div>
+              <p class="text-[11px] text-slate-400 mt-2">Baris yang dominan huruf Arab otomatis diperbesar dengan font Mushaf Amiri.</p>
+            </div>
+          </div>
+
+          <!-- Area Builder Opsi & Kunci Dinamis Sesuai Jenis Soal -->
+          <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3">
+            <div class="flex items-center justify-between">
+              <h4 id="vs-builder-label" class="font-extrabold text-xs uppercase tracking-wider text-blue-950">Opsi Jawaban & Penentuan Kunci</h4>
+              <span id="vs-builder-hint" class="text-xs text-slate-500">Pilih radio button pada opsi yang benar.</span>
+            </div>
+            <div id="vs-builder-container" class="space-y-2.5"></div>
+          </div>
+
+          <div class="flex justify-end gap-2 pt-1">
+            <button onclick="resetFormVisualSoal()" class="btn btn-sm btn-ghost">Bersihkan Form</button>
+            <button id="btn-simpan-soal" onclick="simpanSoalVisualKeServer()" class="btn btn-sm bg-blue-800 hover:bg-blue-900 text-white font-bold px-6">
+              💾 Simpan Soal ke Spreadsheet
+            </button>
+          </div>
+        </div>
+
+        <!-- Tabel Daftar Soal pada Bab Terpilih -->
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 space-y-3">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <div class="flex items-center gap-2">
+              <h3 class="font-extrabold text-sm text-slate-800">📋 Daftar Butir Soal Tersimpan</h3>
+              <span id="badge-jumlah-soal-bab" class="badge badge-sm bg-blue-900 text-white font-bold">0 Soal</span>
+            </div>
+            <div class="flex flex-wrap items-center gap-2">
+              <select id="filter-bank-bab" onchange="renderTabelBankSoal()" class="select select-sm select-bordered font-bold">
+                <option value="ALL">Semua Bab (1 - 30)</option>
+              </select>
+              <select id="filter-bank-tipe" onchange="renderTabelBankSoal()" class="select select-sm select-bordered font-semibold">
+                <option value="ALL">Semua Tipe</option>
+                <option value="PG">PG</option>
+                <option value="PGK">PGK</option>
+                <option value="BS">BS</option>
+                <option value="URUT">URUT</option>
+                <option value="JODOH">JODOH</option>
+                <option value="ISIAN">ISIAN</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="table table-zebra table-sm w-full">
+              <thead class="bg-slate-800 text-white text-xs">
+                <tr>
+                  <th>ID</th>
+                  <th>Bab</th>
+                  <th>Tipe</th>
+                  <th>Pertanyaan Soal</th>
+                  <th>Ringkasan Opsi</th>
+                  <th>Kunci</th>
+                  <th>Bobot</th>
+                  <th class="text-center">Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="tbody-bank-soal" class="text-xs"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 3: KONTROL 30 TOKEN & BAB (KHUSUS SUPERADMIN) -->
       <div id="adm-panel-bab" class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 space-y-4 hidden">
         <div class="flex items-center justify-between">
           <h3 class="font-extrabold text-sm text-slate-700">Pengaturan 30 Token, Durasi & Status Aktif Bab (X, XI, XII)</h3>
@@ -376,7 +497,7 @@
         </div>
       </div>
 
-      <!-- TAB 3: KELOLA ADMIN (KHUSUS SUPERADMIN monggomembaca@gmail.com) -->
+      <!-- TAB 4: KELOLA ADMIN (KHUSUS SUPERADMIN monggomembaca@gmail.com) -->
       <div id="adm-panel-users" class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 space-y-5 hidden">
         <div class="bg-blue-50 border border-blue-200 rounded-xl p-4">
           <h3 class="font-extrabold text-sm text-blue-950 mb-2">➕ Tambah / Perbarui Admin Baru</h3>
@@ -448,7 +569,7 @@
       timerInterval: null,
       pelanggaran: 0,
       isExamActive: false,
-      lastResult: null // Menyimpan hasil ujian terakhir untuk diunduh sebagai PDF A4 oleh murid
+      lastResult: null
     };
 
     let adminState = {
@@ -457,7 +578,34 @@
       profile: null,
       bab: [],
       rekap: [],
-      admins: []
+      admins: [],
+      soalBank: []
+    };
+
+    // State Form Visual Builder untuk 6 Jenis Soal
+    let visualState = {
+      pgOpsi: ['', '', '', '', ''],
+      pgKunci: 'A',
+      pgkOpsi: ['', '', '', '', ''],
+      pgkKunci: [1, 2], // 1-based index
+      bsItems: [
+        { teks: '', kunci: 'B' },
+        { teks: '', kunci: 'S' },
+        { teks: '', kunci: 'B' }
+      ],
+      urutItems: [
+        { teks: '', urutan: 1 },
+        { teks: '', urutan: 2 },
+        { teks: '', urutan: 3 },
+        { teks: '', urutan: 4 }
+      ],
+      jodohPremis: [
+        { teks: '', pairHuruf: 'A' },
+        { teks: '', pairHuruf: 'B' },
+        { teks: '', pairHuruf: 'C' }
+      ],
+      jodohRespon: ['', '', '', ''],
+      isianKunci: ['']
     };
 
     function switchLoginTab(mode) {
@@ -482,6 +630,15 @@
         body: JSON.stringify(payload)
       });
       return await res.json();
+    }
+
+    function convertDriveUrlClient(url) {
+      if (!url) return '';
+      const match = url.match(/[-\w]{25,}/);
+      if (match && (url.includes('drive.google.com') || url.includes('docs.google.com'))) {
+        return 'https://lh3.googleusercontent.com/d/' + match[0];
+      }
+      return url;
     }
 
     // ========================================================================
@@ -648,7 +805,6 @@
       container.innerHTML = '';
       const jwbSekarang = state.jawaban[q.id];
 
-      // 1. PILIHAN GANDA (PG - 5 Opsi Diacak)
       if (q.tipe === 'PG') {
         const labelHuruf = ['A', 'B', 'C', 'D', 'E'];
         q.opsi.forEach((opt, tampilIdx) => {
@@ -672,8 +828,6 @@
           container.appendChild(btn);
         });
       }
-
-      // 2. PILIHAN GANDA KOMPLEKS (PGK - 5 Opsi Diacak)
       else if (q.tipe === 'PGK') {
         const arrDipilih = Array.isArray(jwbSekarang) ? jwbSekarang : [];
         q.opsi.forEach(opt => {
@@ -685,11 +839,8 @@
           }`;
           btn.onclick = () => {
             let nextArr = [...arrDipilih];
-            if (aktif) {
-              nextArr = nextArr.filter(x => x !== opt.idx);
-            } else {
-              nextArr.push(opt.idx);
-            }
+            if (aktif) nextArr = nextArr.filter(x => x !== opt.idx);
+            else nextArr.push(opt.idx);
             state.jawaban[q.id] = nextArr;
             simpanSesiLokal();
             renderButirSoal();
@@ -703,8 +854,6 @@
           container.appendChild(btn);
         });
       }
-
-      // 3. BENAR - SALAH (BS)
       else if (q.tipe === 'BS') {
         const objBS = (typeof jwbSekarang === 'object' && jwbSekarang !== null) ? jwbSekarang : {};
         q.opsi.forEach(opt => {
@@ -725,8 +874,6 @@
           container.appendChild(row);
         });
       }
-
-      // 4. MENGURUTKAN (URUT)
       else if (q.tipe === 'URUT') {
         const arrUrut = Array.isArray(jwbSekarang) ? jwbSekarang : [];
         const info = document.createElement('div');
@@ -747,11 +894,8 @@
           }`;
           card.onclick = () => {
             let nextUrut = [...arrUrut];
-            if (sudahUrut) {
-              nextUrut.splice(pos, 1);
-            } else {
-              nextUrut.push(opt.idx);
-            }
+            if (sudahUrut) nextUrut.splice(pos, 1);
+            else nextUrut.push(opt.idx);
             state.jawaban[q.id] = nextUrut;
             simpanSesiLokal();
             renderButirSoal();
@@ -765,8 +909,6 @@
           container.appendChild(card);
         });
       }
-
-      // 5. MENJODOHKAN (JODOH)
       else if (q.tipe === 'JODOH') {
         const objJodoh = (typeof jwbSekarang === 'object' && jwbSekarang !== null) ? jwbSekarang : {};
         const premisList = q.opsi?.premis || [];
@@ -795,8 +937,6 @@
           container.appendChild(wrap);
         });
       }
-
-      // 6. URAIAN SINGKAT (ISIAN)
       else if (q.tipe === 'ISIAN') {
         const valIsian = jwbSekarang || '';
         const wrap = document.createElement('div');
@@ -836,11 +976,8 @@
       if (typeof state.jawaban[idSoal] !== 'object' || state.jawaban[idSoal] === null) {
         state.jawaban[idSoal] = {};
       }
-      if (responVal === '') {
-        delete state.jawaban[idSoal][premisIdx];
-      } else {
-        state.jawaban[idSoal][premisIdx] = Number(responVal);
-      }
+      if (responVal === '') delete state.jawaban[idSoal][premisIdx];
+      else state.jawaban[idSoal][premisIdx] = Number(responVal);
       simpanSesiLokal();
     }
 
@@ -1046,18 +1183,11 @@
       return 'D (Perlu Bimbingan)';
     }
 
-    /**
-     * Membuat dokumen PDF ukuran A4 Rapi
-     * @param {Object} identitas - { nisn, nama, kelas, sekolah }
-     * @param {Array} daftarBab - Array berisi { kode_bab, nama_bab, skor, maks, nilai }
-     * @param {String} judulDokumen - Judul laporan
-     */
     function generatePdfRaporA4(identitas, daftarBab, judulDokumen) {
       const { jsPDF } = window.jspdf;
       const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
 
-      // Header Kop Rapor RUBEL EXAMBRO
-      doc.setFillColor(15, 23, 42); // Slate-900 / Biru Gelap
+      doc.setFillColor(15, 23, 42);
       doc.rect(14, 12, 182, 22, 'F');
 
       doc.setTextColor(255, 255, 255);
@@ -1069,7 +1199,6 @@
       doc.setFontSize(9.5);
       doc.text(judulDokumen.toUpperCase(), 105, 28, { align: 'center' });
 
-      // Box Identitas Peserta Didik
       doc.setTextColor(15, 23, 42);
       doc.setDrawColor(203, 213, 225);
       doc.setFillColor(248, 250, 252);
@@ -1105,7 +1234,6 @@
       doc.text(`${daftarBab.length} Bab`, 156, 53);
       doc.text(tglUnduh, 156, 60);
 
-      // Tabel Rincian Nilai Bab
       const rows = daftarBab.map((item, idx) => [
         idx + 1,
         item.kode_bab,
@@ -1115,7 +1243,6 @@
         predikatNilai(item.nilai)
       ]);
 
-      // Hitung Rata-Rata Nilai Akhir
       const totalNilai = daftarBab.reduce((acc, cur) => acc + Number(cur.nilai || 0), 0);
       const rataRata   = daftarBab.length > 0 ? (totalNilai / daftarBab.length).toFixed(2) : '0.00';
 
@@ -1157,30 +1284,26 @@
         }
       });
 
-      // Bagian Blok Tanda Tangan Guru Pengajar di Bawah Tabel
       let finalY = doc.lastAutoTable.finalY + 16;
       if (finalY > 240) {
         doc.addPage();
         finalY = 25;
       }
 
-      const signX = 128; // Posisi rata kiri blok tanda tangan di sisi kanan halaman A4
+      const signX = 128;
       doc.setFont('helvetica', 'normal');
       doc.setFontSize(10);
       doc.setTextColor(15, 23, 42);
 
-      // Nama kota dikosongi dengan titik-titik agar ditulis manual, diikuti tanggal bulan tahun saat diunduh
       doc.text(`..........................., ${tglUnduh}`, signX, finalY);
       doc.setFont('helvetica', 'bold');
       doc.text('Guru Pengajar,', signX, finalY + 6);
 
-      // Ruang kosong untuk tanda tangan & nama guru ditulis manual
       doc.setFont('helvetica', 'normal');
       doc.text('( ........................................................... )', signX, finalY + 32);
       doc.setFontSize(9);
       doc.text('NIP/NIY. ...............................................', signX, finalY + 37);
 
-      // Catatan Kaki Dokumen
       doc.setFontSize(8);
       doc.setTextColor(148, 163, 184);
       doc.text('Dokumen ini diterbitkan secara resmi melalui Sistem Asesmen Digital RUBEL EXAMBRO.', 14, 287);
@@ -1190,7 +1313,6 @@
       doc.save(`Rapor_RUBEL_${safeName}_${suffix}.pdf`);
     }
 
-    // Fungsi Unduh PDF oleh Murid di Akhir Ujian
     function unduhPdfHasilMurid() {
       if (!state.lastResult) {
         alert('Data hasil ujian tidak ditemukan.');
@@ -1204,7 +1326,6 @@
       );
     }
 
-    // Fungsi Unduh PDF Per Bab oleh Admin
     function unduhPdfAdminPerBab(rowIndex) {
       const item = adminState.rekap.find(r => Number(r.row_index) === Number(rowIndex));
       if (!item) return;
@@ -1216,7 +1337,6 @@
       );
     }
 
-    // Fungsi Unduh Rapor Keseluruhan Bab yang Telah Dikerjakan Murid oleh Admin
     function unduhPdfAdminSemuaBabMurid(nisnTarget, namaTarget, sekolahTarget) {
       const semuaMilikMurid = adminState.rekap.filter(r => {
         if (nisnTarget && r.nisn) return String(r.nisn) === String(nisnTarget);
@@ -1228,7 +1348,6 @@
         return;
       }
 
-      // Urutkan berdasarkan Kode Bab (BAB_01, BAB_02, dst.)
       const terurut = [...semuaMilikMurid].sort((a, b) => a.kode_bab.localeCompare(b.kode_bab));
       const identitas = {
         nisn: terurut[0].nisn,
@@ -1283,10 +1402,11 @@
     }
 
     function terapkanDataDashboardAdmin(res) {
-      adminState.profile = res.admin;
-      adminState.bab     = res.bab || [];
-      adminState.rekap   = res.rekap || [];
-      adminState.admins  = res.admins || [];
+      adminState.profile  = res.admin;
+      adminState.bab      = res.bab || [];
+      adminState.rekap    = res.rekap || [];
+      adminState.admins   = res.admins || [];
+      adminState.soalBank = res.soal_bank || [];
 
       document.getElementById('adm-email-display').textContent = `${res.admin.nama} (${res.admin.email})`;
       document.getElementById('adm-role-badge').textContent = res.admin.role;
@@ -1296,6 +1416,7 @@
 
       // HAK AKSES ROLE: Admin selain SUPERADMIN hanya melihat menu Rekap Nilai Murid
       const isSuper = res.admin.role === 'SUPERADMIN';
+      document.getElementById('adm-tab-soal').classList.toggle('hidden', !isSuper);
       document.getElementById('adm-tab-bab').classList.toggle('hidden', !isSuper);
       document.getElementById('adm-tab-users').classList.toggle('hidden', !isSuper);
       document.getElementById('btn-adm-clear-cache').classList.toggle('hidden', !isSuper);
@@ -1304,7 +1425,7 @@
         switchAdminTab('rekap');
       }
 
-      // Populate Filter Sekolah secara dinamis dari data rekap
+      // Populate Filter Sekolah
       const selSekolah = document.getElementById('filter-rekap-sekolah');
       const prevSekolah = selSekolah.value;
       const unikSekolah = [...new Set(adminState.rekap.map(r => r.sekolah).filter(Boolean))].sort();
@@ -1314,7 +1435,7 @@
       });
       if (unikSekolah.includes(prevSekolah)) selSekolah.value = prevSekolah;
 
-      // Populate Filter Kelas secara dinamis dari data rekap
+      // Populate Filter Kelas
       const selKelas = document.getElementById('filter-rekap-kelas');
       const prevKelas = selKelas.value;
       const unikKelas = [...new Set(adminState.rekap.map(r => r.kelas).filter(Boolean))].sort();
@@ -1324,19 +1445,35 @@
       });
       if (unikKelas.includes(prevKelas)) selKelas.value = prevKelas;
 
-      // Populate Filter Bab
-      const selBab = document.getElementById('filter-rekap-bab');
-      const prevBab = selBab.value;
-      selBab.innerHTML = `<option value="ALL">📚 Semua Bab (1 - 30)</option>`;
+      // Populate Filter Bab di Rekap & di Form Visual Bank Soal
+      const selBab     = document.getElementById('filter-rekap-bab');
+      const prevBab    = selBab.value;
+      const selVsBab   = document.getElementById('vs-kode-bab');
+      const prevVsBab  = selVsBab.value;
+      const selBankBab = document.getElementById('filter-bank-bab');
+      const prevBankBab= selBankBab.value;
+
+      selBab.innerHTML     = `<option value="ALL">📚 Semua Bab (1 - 30)</option>`;
+      selVsBab.innerHTML   = '';
+      selBankBab.innerHTML = `<option value="ALL">Semua Bab (1 - 30)</option>`;
+
       adminState.bab.forEach(b => {
-        selBab.innerHTML += `<option value="${b.kode_bab}">${b.kode_bab} - ${b.nama_bab}</option>`;
+        const optHtml = `<option value="${b.kode_bab}">${b.kode_bab} (${b.jenjang}) - ${b.nama_bab}</option>`;
+        selBab.innerHTML     += optHtml;
+        selVsBab.innerHTML   += optHtml;
+        selBankBab.innerHTML += optHtml;
       });
-      selBab.value = prevBab || 'ALL';
+
+      selBab.value     = prevBab || 'ALL';
+      selVsBab.value   = prevVsBab || (adminState.bab[0]?.kode_bab || 'BAB_01');
+      selBankBab.value = prevBankBab || 'ALL';
 
       renderAdminRekap();
       if (isSuper) {
         renderAdminBab();
         renderAdminUsers();
+        renderVisualOpsiBuilder();
+        renderTabelBankSoal();
       }
     }
 
@@ -1344,12 +1481,536 @@
       const isSuper = adminState.profile && adminState.profile.role === 'SUPERADMIN';
       if (!isSuper && tab !== 'rekap') return;
 
-      ['rekap', 'bab', 'users'].forEach(t => {
+      ['rekap', 'soal', 'bab', 'users'].forEach(t => {
         document.getElementById(`adm-panel-${t}`).classList.toggle('hidden', t !== tab);
         document.getElementById(`adm-tab-${t}`).classList.toggle('tab-active', t === tab);
       });
     }
 
+    // ========================================================================
+    // ENGINE FORM VISUAL BANK SOAL (6 JENIS SOAL) - KHUSUS SUPERADMIN
+    // ========================================================================
+    function updateLivePreviewSoal() {
+      const teks = document.getElementById('vs-teks-soal').value;
+      const imgUrl = document.getElementById('vs-gambar-url').value.trim();
+      const previewEl = document.getElementById('vs-live-preview-text');
+
+      if (!teks.trim()) {
+        previewEl.innerHTML = `<span class="text-slate-400 italic text-xs">Pratinjau teks soal akan tampil di sini...</span>`;
+      } else {
+        previewEl.innerHTML = formatTeksArabOtomatis(teks);
+      }
+
+      const imgWrap = document.getElementById('vs-live-preview-img-wrap');
+      const imgEl   = document.getElementById('vs-live-preview-img');
+      if (imgUrl) {
+        imgEl.src = convertDriveUrlClient(imgUrl);
+        imgWrap.classList.remove('hidden');
+      } else {
+        imgWrap.classList.add('hidden');
+      }
+    }
+
+    function sinkronFilterBabSoal() {
+      const dipilih = document.getElementById('vs-kode-bab').value;
+      document.getElementById('filter-bank-bab').value = dipilih;
+      renderTabelBankSoal();
+    }
+
+    function renderVisualOpsiBuilder() {
+      const tipe = document.getElementById('vs-tipe').value;
+      const container = document.getElementById('vs-builder-container');
+      const hint = document.getElementById('vs-builder-hint');
+      container.innerHTML = '';
+
+      // 1. BUILDER PILIHAN GANDA (5 OPSI A-E)
+      if (tipe === 'PG') {
+        hint.textContent = 'Ketik 5 opsi (A s.d. E) dan klik bulatan Kunci pada 1 jawaban yang paling tepat.';
+        const huruf = ['A', 'B', 'C', 'D', 'E'];
+        huruf.forEach((h, idx) => {
+          const isKey = visualState.pgKunci === h;
+          const row = document.createElement('div');
+          row.className = `flex items-center gap-2.5 p-2 rounded-xl border ${isKey ? 'bg-blue-50 border-blue-600' : 'bg-white border-slate-200'}`;
+          row.innerHTML = `
+            <label class="flex items-center gap-1.5 cursor-pointer shrink-0 px-2">
+              <input type="radio" name="vs-pg-key" ${isKey ? 'checked' : ''} onchange="visualState.pgKunci='${h}'; renderVisualOpsiBuilder();" class="radio radio-sm radio-primary" />
+              <span class="font-extrabold text-xs ${isKey ? 'text-blue-900' : 'text-slate-600'}">Opsi ${h}</span>
+            </label>
+            <input type="text" value="${(visualState.pgOpsi[idx] || '').replace(/"/g, '&quot;')}"
+              oninput="visualState.pgOpsi[${idx}] = this.value"
+              placeholder="Ketik teks pilihan ${h} (mendukung teks Arab)..."
+              class="input input-sm input-bordered flex-grow bg-white" />
+          `;
+          container.appendChild(row);
+        });
+      }
+
+      // 2. BUILDER PILIHAN GANDA KOMPLEKS (5 OPSI - CENTANG BANYAK)
+      else if (tipe === 'PGK') {
+        hint.textContent = 'Ketik 5 pernyataan dan centang kotak Kunci pada pernyataan-pernyataan yang BENAR.';
+        for (let i = 0; i < 5; i++) {
+          const nomor = i + 1;
+          const isChecked = visualState.pgkKunci.includes(nomor);
+          const row = document.createElement('div');
+          row.className = `flex items-center gap-2.5 p-2 rounded-xl border ${isChecked ? 'bg-indigo-50 border-indigo-600' : 'bg-white border-slate-200'}`;
+          row.innerHTML = `
+            <label class="flex items-center gap-1.5 cursor-pointer shrink-0 px-2">
+              <input type="checkbox" ${isChecked ? 'checked' : ''} onchange="toggleVisualPgkKey(${nomor})" class="checkbox checkbox-sm checkbox-primary" />
+              <span class="font-extrabold text-xs ${isChecked ? 'text-indigo-900' : 'text-slate-600'}">Pernyataan ${nomor}</span>
+            </label>
+            <input type="text" value="${(visualState.pgkOpsi[i] || '').replace(/"/g, '&quot;')}"
+              oninput="visualState.pgkOpsi[${i}] = this.value"
+              placeholder="Ketik pernyataan ke-${nomor}..."
+              class="input input-sm input-bordered flex-grow bg-white" />
+          `;
+          container.appendChild(row);
+        }
+      }
+
+      // 3. BUILDER BENAR - SALAH (MULTI PERNYATAAN)
+      else if (tipe === 'BS') {
+        hint.textContent = 'Ketik daftar pernyataan dan tentukan apakah masing-masing bernilai Benar (B) atau Salah (S).';
+        visualState.bsItems.forEach((item, idx) => {
+          const row = document.createElement('div');
+          row.className = 'flex flex-wrap sm:flex-nowrap items-center gap-2 bg-white p-2 rounded-xl border border-slate-200';
+          row.innerHTML = `
+            <span class="badge badge-sm bg-slate-700 text-white font-bold shrink-0">#${idx + 1}</span>
+            <input type="text" value="${(item.teks || '').replace(/"/g, '&quot;')}"
+              oninput="visualState.bsItems[${idx}].teks = this.value"
+              placeholder="Ketik teks pernyataan ke-${idx + 1}..."
+              class="input input-sm input-bordered flex-grow" />
+            <select onchange="visualState.bsItems[${idx}].kunci = this.value" class="select select-sm select-bordered font-bold ${item.kunci === 'B' ? 'text-emerald-700' : 'text-rose-600'}">
+              <option value="B" ${item.kunci === 'B' ? 'selected' : ''}>Kunci: BENAR (B)</option>
+              <option value="S" ${item.kunci === 'S' ? 'selected' : ''}>Kunci: SALAH (S)</option>
+            </select>
+            ${visualState.bsItems.length > 2 ? `<button type="button" onclick="visualState.bsItems.splice(${idx},1); renderVisualOpsiBuilder();" class="btn btn-xs btn-ghost text-rose-600">✕</button>` : ''}
+          `;
+          container.appendChild(row);
+        });
+        const btnAdd = document.createElement('button');
+        btnAdd.type = 'button';
+        btnAdd.className = 'btn btn-xs btn-outline border-slate-300 font-bold';
+        btnAdd.textContent = '➕ Tambah Baris Pernyataan B/S';
+        btnAdd.onclick = () => {
+          visualState.bsItems.push({ teks: '', kunci: 'B' });
+          renderVisualOpsiBuilder();
+        };
+        container.appendChild(btnAdd);
+      }
+
+      // 4. BUILDER MENGURUTKAN (URUT)
+      else if (tipe === 'URUT') {
+        hint.textContent = 'Ketik item/langkah secara acak atau berurutan, lalu pilih Nomor Urutan yang benar (1, 2, 3, dst.).';
+        const total = visualState.urutItems.length;
+        visualState.urutItems.forEach((item, idx) => {
+          let optUrut = '';
+          for (let n = 1; n <= total; n++) {
+            optUrut += `<option value="${n}" ${Number(item.urutan) === n ? 'selected' : ''}>Urutan ke-${n}</option>`;
+          }
+          const row = document.createElement('div');
+          row.className = 'flex items-center gap-2 bg-white p-2 rounded-xl border border-slate-200';
+          row.innerHTML = `
+            <span class="badge badge-sm bg-blue-900 text-white font-bold shrink-0">Item ${idx + 1}</span>
+            <input type="text" value="${(item.teks || '').replace(/"/g, '&quot;')}"
+              oninput="visualState.urutItems[${idx}].teks = this.value"
+              placeholder="Ketik teks langkah / tahapan..."
+              class="input input-sm input-bordered flex-grow" />
+            <select onchange="visualState.urutItems[${idx}].urutan = Number(this.value)" class="select select-sm select-bordered font-bold text-blue-900">
+              ${optUrut}
+            </select>
+            ${total > 2 ? `<button type="button" onclick="hapusItemUrut(${idx})" class="btn btn-xs btn-ghost text-rose-600">✕</button>` : ''}
+          `;
+          container.appendChild(row);
+        });
+        const btnAdd = document.createElement('button');
+        btnAdd.type = 'button';
+        btnAdd.className = 'btn btn-xs btn-outline border-slate-300 font-bold';
+        btnAdd.textContent = '➕ Tambah Item Urutan';
+        btnAdd.onclick = () => {
+          visualState.urutItems.push({ teks: '', urutan: visualState.urutItems.length + 1 });
+          renderVisualOpsiBuilder();
+        };
+        container.appendChild(btnAdd);
+      }
+
+      // 5. BUILDER MENJODOHKAN (JODOH - PREMIS KIRI & RESPON KANAN)
+      else if (tipe === 'JODOH') {
+        hint.textContent = 'Isi daftar Premis (Kiri) dan pilihan Respon (Kanan), lalu pilih pasangan huruf yang tepat pada setiap Premis.';
+        const gridWrap = document.createElement('div');
+        gridWrap.className = 'grid grid-cols-1 lg:grid-cols-2 gap-4';
+
+        // Kolom Kiri: Premis + Dropdown Kunci Pasangan
+        const colLeft = document.createElement('div');
+        colLeft.className = 'bg-white p-3 rounded-xl border border-slate-200 space-y-2';
+        colLeft.innerHTML = `<div class="font-extrabold text-xs text-blue-900 border-b pb-1.5">KOLOM KIRI: DAFTAR PREMIS & KUNCI PASANGAN</div>`;
+
+        visualState.jodohPremis.forEach((p, idx) => {
+          let selectHuruf = '';
+          visualState.jodohRespon.forEach((r, rIdx) => {
+            const h = String.fromCharCode(65 + rIdx);
+            selectHuruf += `<option value="${h}" ${p.pairHuruf === h ? 'selected' : ''}>Pasangan: Respon ${h}</option>`;
+          });
+          const rDiv = document.createElement('div');
+          rDiv.className = 'flex items-center gap-1.5';
+          rDiv.innerHTML = `
+            <span class="badge badge-xs bg-blue-900 text-white font-bold">${idx + 1}</span>
+            <input type="text" value="${(p.teks || '').replace(/"/g, '&quot;')}"
+              oninput="visualState.jodohPremis[${idx}].teks = this.value"
+              placeholder="Premis ${idx + 1} (misal: lafal Arab)..."
+              class="input input-xs sm:input-sm input-bordered flex-grow" />
+            <select onchange="visualState.jodohPremis[${idx}].pairHuruf = this.value" class="select select-xs sm:select-sm select-bordered font-bold text-emerald-700">
+              ${selectHuruf}
+            </select>
+            ${visualState.jodohPremis.length > 2 ? `<button type="button" onclick="visualState.jodohPremis.splice(${idx},1); renderVisualOpsiBuilder();" class="btn btn-xs btn-ghost text-rose-600">✕</button>` : ''}
+          `;
+          colLeft.appendChild(rDiv);
+        });
+
+        const btnAddPremis = document.createElement('button');
+        btnAddPremis.type = 'button';
+        btnAddPremis.className = 'btn btn-xs btn-outline border-slate-300 font-bold mt-1';
+        btnAddPremis.textContent = '➕ Tambah Premis';
+        btnAddPremis.onclick = () => {
+          visualState.jodohPremis.push({ teks: '', pairHuruf: 'A' });
+          renderVisualOpsiBuilder();
+        };
+        colLeft.appendChild(btnAddPremis);
+
+        // Kolom Kanan: Respon (A, B, C, D...)
+        const colRight = document.createElement('div');
+        colRight.className = 'bg-white p-3 rounded-xl border border-slate-200 space-y-2';
+        colRight.innerHTML = `<div class="font-extrabold text-xs text-indigo-900 border-b pb-1.5">KOLOM KANAN: PILIHAN RESPON (A, B, C, dst.)</div>`;
+
+        visualState.jodohRespon.forEach((rTeks, rIdx) => {
+          const h = String.fromCharCode(65 + rIdx);
+          const rDiv = document.createElement('div');
+          rDiv.className = 'flex items-center gap-1.5';
+          rDiv.innerHTML = `
+            <span class="badge badge-xs bg-indigo-800 text-white font-bold">${h}</span>
+            <input type="text" value="${(rTeks || '').replace(/"/g, '&quot;')}"
+              oninput="visualState.jodohRespon[${rIdx}] = this.value"
+              placeholder="Teks Respon ${h}..."
+              class="input input-xs sm:input-sm input-bordered flex-grow" />
+            ${visualState.jodohRespon.length > 2 ? `<button type="button" onclick="visualState.jodohRespon.splice(${rIdx},1); renderVisualOpsiBuilder();" class="btn btn-xs btn-ghost text-rose-600">✕</button>` : ''}
+          `;
+          colRight.appendChild(rDiv);
+        });
+
+        const btnAddRespon = document.createElement('button');
+        btnAddRespon.type = 'button';
+        btnAddRespon.className = 'btn btn-xs btn-outline border-slate-300 font-bold mt-1';
+        btnAddRespon.textContent = '➕ Tambah Respon';
+        btnAddRespon.onclick = () => {
+          visualState.jodohRespon.push('');
+          renderVisualOpsiBuilder();
+        };
+        colRight.appendChild(btnAddRespon);
+
+        gridWrap.appendChild(colLeft);
+        gridWrap.appendChild(colRight);
+        container.appendChild(gridWrap);
+      }
+
+      // 6. BUILDER URAIAN SINGKAT (ISIAN)
+      else if (tipe === 'ISIAN') {
+        hint.textContent = 'Masukkan kemungkinan jawaban benar (huruf besar/kecil diabaikan otomatis saat dinilai).';
+        visualState.isianKunci.forEach((kTeks, idx) => {
+          const row = document.createElement('div');
+          row.className = 'flex items-center gap-2 bg-white p-2 rounded-xl border border-slate-200';
+          row.innerHTML = `
+            <span class="badge badge-sm bg-emerald-700 text-white font-bold shrink-0">Alternatif Kunci #${idx + 1}</span>
+            <input type="text" value="${(kTeks || '').replace(/"/g, '&quot;')}"
+              oninput="visualState.isianKunci[${idx}] = this.value"
+              placeholder="Contoh: zabur"
+              class="input input-sm input-bordered flex-grow font-bold" />
+            ${visualState.isianKunci.length > 1 ? `<button type="button" onclick="visualState.isianKunci.splice(${idx},1); renderVisualOpsiBuilder();" class="btn btn-xs btn-ghost text-rose-600">✕</button>` : ''}
+          `;
+          container.appendChild(row);
+        });
+        const btnAdd = document.createElement('button');
+        btnAdd.type = 'button';
+        btnAdd.className = 'btn btn-xs btn-outline border-slate-300 font-bold';
+        btnAdd.textContent = '➕ Tambah Variasi Jawaban Benar';
+        btnAdd.onclick = () => {
+          visualState.isianKunci.push('');
+          renderVisualOpsiBuilder();
+        };
+        container.appendChild(btnAdd);
+      }
+    }
+
+    function toggleVisualPgkKey(nomor) {
+      if (visualState.pgkKunci.includes(nomor)) {
+        visualState.pgkKunci = visualState.pgkKunci.filter(x => x !== nomor);
+      } else {
+        visualState.pgkKunci.push(nomor);
+        visualState.pgkKunci.sort((a, b) => a - b);
+      }
+      renderVisualOpsiBuilder();
+    }
+
+    function hapusItemUrut(idx) {
+      visualState.urutItems.splice(idx, 1);
+      visualState.urutItems.forEach((it, i) => { it.urutan = i + 1; });
+      renderVisualOpsiBuilder();
+    }
+
+    function rakitDataOpsiDanKunciDariVisual() {
+      const tipe = document.getElementById('vs-tipe').value;
+
+      if (tipe === 'PG') {
+        const bersih = visualState.pgOpsi.map(s => s.trim());
+        if (bersih.some(s => !s)) throw new Error('Mohon lengkapi kelima opsi (A s.d. E) pada soal Pilihan Ganda!');
+        return { data_opsi: bersih.join(' | '), kunci: visualState.pgKunci };
+      }
+
+      if (tipe === 'PGK') {
+        const bersih = visualState.pgkOpsi.map(s => s.trim());
+        if (bersih.some(s => !s)) throw new Error('Mohon lengkapi kelima pernyataan pada soal PG Kompleks!');
+        if (visualState.pgkKunci.length === 0) throw new Error('Pilih minimal 1 pernyataan benar untuk kunci PG Kompleks!');
+        return { data_opsi: bersih.join(' | '), kunci: visualState.pgkKunci.join(', ') };
+      }
+
+      if (tipe === 'BS') {
+        const validItems = visualState.bsItems.filter(it => it.teks.trim() !== '');
+        if (validItems.length === 0) throw new Error('Masukkan minimal 1 pernyataan Benar/Salah!');
+        return {
+          data_opsi: validItems.map(it => it.teks.trim()).join(' | '),
+          kunci: validItems.map(it => it.kunci).join(', ')
+        };
+      }
+
+      if (tipe === 'URUT') {
+        const validItems = visualState.urutItems.filter(it => it.teks.trim() !== '');
+        if (validItems.length < 2) throw new Error('Masukkan minimal 2 item untuk soal Mengurutkan!');
+        // Kunci di Sheet adalah daftar nomor item (1-based) dari urutan ke-1 sampai terakhir
+        // Contoh: jika Item 3 adalah Urutan ke-1, Item 1 adalah Urutan ke-2 -> Kunci: "3, 1, ..."
+        const pasanganIndex = validItems.map((it, idx) => ({ itemNo: idx + 1, posUrut: Number(it.urutan) }));
+        pasanganIndex.sort((a, b) => a.posUrut - b.posUrut);
+        return {
+          data_opsi: validItems.map(it => it.teks.trim()).join(' | '),
+          kunci: pasanganIndex.map(p => p.itemNo).join(', ')
+        };
+      }
+
+      if (tipe === 'JODOH') {
+        const validPremis = visualState.jodohPremis.filter(p => p.teks.trim() !== '');
+        const validRespon = visualState.jodohRespon.map(r => r.trim()).filter(Boolean);
+        if (validPremis.length === 0 || validRespon.length === 0) {
+          throw new Error('Mohon isi daftar Premis (Kiri) dan pilihan Respon (Kanan) pada soal Menjodohkan!');
+        }
+        const strPremis = validPremis.map(p => p.teks.trim()).join(' | ');
+        const strRespon = validRespon.join(' | ');
+        const strKunci  = validPremis.map((p, idx) => `${idx + 1}:${p.pairHuruf}`).join(', ');
+        return {
+          data_opsi: `${strPremis} || ${strRespon}`,
+          kunci: strKunci
+        };
+      }
+
+      if (tipe === 'ISIAN') {
+        const validKunci = visualState.isianKunci.map(k => k.trim()).filter(Boolean);
+        if (validKunci.length === 0) throw new Error('Masukkan minimal 1 kata kunci jawaban benar untuk soal Uraian Singkat!');
+        return {
+          data_opsi: '',
+          kunci: validKunci.join(' | ')
+        };
+      }
+
+      return { data_opsi: '', kunci: '' };
+    }
+
+    async function simpanSoalVisualKeServer() {
+      const btn = document.getElementById('btn-simpan-soal');
+      try {
+        const kode_bab   = document.getElementById('vs-kode-bab').value;
+        const tipe       = document.getElementById('vs-tipe').value;
+        const bobot      = Number(document.getElementById('vs-bobot').value) || 2;
+        const id_soal    = document.getElementById('vs-id-soal').value.trim();
+        const soal       = document.getElementById('vs-teks-soal').value.trim();
+        const gambar_url = document.getElementById('vs-gambar-url').value.trim();
+        const row_index  = Number(document.getElementById('vs-row-index').value) || 0;
+
+        if (!soal) {
+          alert('Mohon isi Teks Pertanyaan / Pokok Soal terlebih dahulu!');
+          return;
+        }
+
+        const { data_opsi, kunci } = rakitDataOpsiDanKunciDariVisual();
+
+        btn.disabled = true;
+        btn.textContent = '⏳ Menyimpan ke Spreadsheet...';
+
+        const res = await callGasApi({
+          action: 'admin_action',
+          sub_action: 'save_soal',
+          email: adminState.email,
+          pin: adminState.pin,
+          row_index, id_soal, kode_bab, tipe, soal, gambar_url, data_opsi, kunci, bobot
+        });
+
+        if (res.status === 'success') {
+          terapkanDataDashboardAdmin(res);
+          resetFormVisualSoal();
+          alert('✅ Butir soal berhasil disimpan ke Sheet Bank_Soal!');
+        } else {
+          alert(res.message);
+        }
+      } catch (err) {
+        alert(err.message);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = '💾 Simpan Soal ke Spreadsheet';
+      }
+    }
+
+    function resetFormVisualSoal() {
+      document.getElementById('vs-row-index').value = '0';
+      document.getElementById('vs-id-soal').value = '';
+      document.getElementById('vs-teks-soal').value = '';
+      document.getElementById('vs-gambar-url').value = '';
+      document.getElementById('vs-bobot').value = '2';
+      document.getElementById('form-soal-title').textContent = '➕ Tambah Butir Soal Baru (Form Visual)';
+      document.getElementById('btn-batal-edit-soal').classList.add('hidden');
+
+      visualState = {
+        pgOpsi: ['', '', '', '', ''],
+        pgKunci: 'A',
+        pgkOpsi: ['', '', '', '', ''],
+        pgkKunci: [1, 2],
+        bsItems: [{ teks: '', kunci: 'B' }, { teks: '', kunci: 'S' }, { teks: '', kunci: 'B' }],
+        urutItems: [{ teks: '', urutan: 1 }, { teks: '', urutan: 2 }, { teks: '', urutan: 3 }, { teks: '', urutan: 4 }],
+        jodohPremis: [{ teks: '', pairHuruf: 'A' }, { teks: '', pairHuruf: 'B' }, { teks: '', pairHuruf: 'C' }],
+        jodohRespon: ['', '', '', ''],
+        isianKunci: ['']
+      };
+
+      updateLivePreviewSoal();
+      renderVisualOpsiBuilder();
+    }
+
+    function muatSoalKeFormVisual(rowIndex) {
+      const item = adminState.soalBank.find(s => Number(s.row_index) === Number(rowIndex));
+      if (!item) return;
+
+      document.getElementById('vs-row-index').value = item.row_index;
+      document.getElementById('vs-kode-bab').value  = item.kode_bab;
+      document.getElementById('vs-tipe').value      = item.tipe;
+      document.getElementById('vs-bobot').value     = item.bobot;
+      document.getElementById('vs-id-soal').value   = item.id_soal;
+      document.getElementById('vs-teks-soal').value = item.soal;
+      document.getElementById('vs-gambar-url').value= item.gambar_url || '';
+
+      document.getElementById('form-soal-title').textContent = `✏️ Edit Butir Soal: ${item.id_soal} (${item.kode_bab})`;
+      document.getElementById('btn-batal-edit-soal').classList.remove('hidden');
+
+      // Uraikan string data_opsi & kunci dari Sheet kembali ke dalam state Form Visual
+      const partsOpsi = item.data_opsi ? item.data_opsi.split('|').map(s => s.trim()) : [];
+
+      if (item.tipe === 'PG') {
+        visualState.pgOpsi = [0, 1, 2, 3, 4].map(i => partsOpsi[i] || '');
+        const mapKeHuruf = { '1': 'A', '2': 'B', '3': 'C', '4': 'D', '5': 'E' };
+        const kUp = item.kunci.trim().toUpperCase();
+        visualState.pgKunci = mapKeHuruf[kUp] || kUp || 'A';
+      }
+      else if (item.tipe === 'PGK') {
+        visualState.pgkOpsi = [0, 1, 2, 3, 4].map(i => partsOpsi[i] || '');
+        const mapKeNomor = { 'A': 1, 'B': 2, 'C': 3, 'D': 4, 'E': 5, '1': 1, '2': 2, '3': 3, '4': 4, '5': 5 };
+        visualState.pgkKunci = item.kunci.split(',').map(k => mapKeNomor[k.trim().toUpperCase()]).filter(Boolean);
+      }
+      else if (item.tipe === 'BS') {
+        const kunciArr = item.kunci.split(',').map(k => k.trim().toUpperCase());
+        visualState.bsItems = partsOpsi.map((t, i) => ({ teks: t, kunci: kunciArr[i] === 'S' ? 'S' : 'B' }));
+      }
+      else if (item.tipe === 'URUT') {
+        // Kunci di Sheet menyimpan urutan nomor item (misal "3, 1, 2, 4")
+        const urutKunci = item.kunci.split(',').map(k => Number(k.trim()));
+        visualState.urutItems = partsOpsi.map((t, idx) => {
+          const pos = urutKunci.indexOf(idx + 1);
+          return { teks: t, urutan: pos !== -1 ? (pos + 1) : (idx + 1) };
+        });
+      }
+      else if (item.tipe === 'JODOH') {
+        const duaKolom = item.data_opsi.split('||');
+        const listPremis = (duaKolom[0] || '').split('|').map(s => s.trim()).filter(Boolean);
+        const listRespon = (duaKolom[1] || '').split('|').map(s => s.trim()).filter(Boolean);
+        const mapPasang  = {};
+        item.kunci.split(',').forEach(pair => {
+          const p = pair.split(':');
+          if (p.length === 2) mapPasang[Number(p[0].trim())] = p[1].trim().toUpperCase();
+        });
+        visualState.jodohPremis = listPremis.map((t, idx) => ({ teks: t, pairHuruf: mapPasang[idx + 1] || 'A' }));
+        visualState.jodohRespon = listRespon.length > 0 ? listRespon : ['', ''];
+      }
+      else if (item.tipe === 'ISIAN') {
+        const kList = item.kunci.split('|').map(s => s.trim()).filter(Boolean);
+        visualState.isianKunci = kList.length > 0 ? kList : [''];
+      }
+
+      updateLivePreviewSoal();
+      renderVisualOpsiBuilder();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    async function hapusSoalDariBank(rowIndex, idSoal) {
+      if (!confirm(`Yakin ingin menghapus butir soal ${idSoal} secara permanen dari Spreadsheet?`)) return;
+      const res = await callGasApi({
+        action: 'admin_action',
+        sub_action: 'delete_soal',
+        email: adminState.email,
+        pin: adminState.pin,
+        row_index: rowIndex
+      });
+      if (res.status === 'success') {
+        terapkanDataDashboardAdmin(res);
+      } else {
+        alert(res.message);
+      }
+    }
+
+    function renderTabelBankSoal() {
+      const fBab  = document.getElementById('filter-bank-bab').value;
+      const fTipe = document.getElementById('filter-bank-tipe').value;
+      const tbody = document.getElementById('tbody-bank-soal');
+      tbody.innerHTML = '';
+
+      const filtered = adminState.soalBank.filter(s => {
+        const cocokBab  = fBab === 'ALL' || s.kode_bab === fBab;
+        const cocokTipe = fTipe === 'ALL' || s.tipe === fTipe;
+        return cocokBab && cocokTipe;
+      });
+
+      document.getElementById('badge-jumlah-soal-bab').textContent = `${filtered.length} Soal`;
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="8" class="text-center py-6 text-slate-400">Belum ada butir soal untuk filter bab/tipe ini.</td></tr>`;
+        return;
+      }
+
+      filtered.forEach(s => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td class="font-mono font-bold text-blue-900">${s.id_soal}</td>
+          <td><span class="badge badge-xs font-bold">${s.kode_bab}</span></td>
+          <td><span class="badge badge-xs badge-outline font-bold">${s.tipe}</span></td>
+          <td class="max-w-xs truncate font-medium">${s.soal.replace(/</g, '&lt;')}</td>
+          <td class="max-w-[200px] truncate text-slate-500">${(s.data_opsi || '-').replace(/</g, '&lt;')}</td>
+          <td><span class="font-mono font-bold text-emerald-700">${s.kunci}</span></td>
+          <td class="font-bold text-center">${s.bobot}</td>
+          <td class="text-center">
+            <div class="flex items-center justify-center gap-1">
+              <button onclick="muatSoalKeFormVisual(${s.row_index})" class="btn btn-xs bg-amber-500 hover:bg-amber-600 text-white border-0">✏️ Edit</button>
+              <button onclick="hapusSoalDariBank(${s.row_index}, '${s.id_soal}')" class="btn btn-xs btn-error text-white">Hapus</button>
+            </div>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    // ========================================================================
+    // TABEL REKAP NILAI, BAB & KELOLA ADMIN
+    // ========================================================================
     function getFilteredAdminRekap() {
       const filterSekolah = document.getElementById('filter-rekap-sekolah').value;
       const filterKelas   = document.getElementById('filter-rekap-kelas').value;
@@ -1571,7 +2232,7 @@
     }
 
     function logoutAdmin() {
-      adminState = { email: '', pin: '', profile: null, bab: [], rekap: [], admins: [] };
+      adminState = { email: '', pin: '', profile: null, bab: [], rekap: [], admins: [], soalBank: [] };
       document.getElementById('view-admin').classList.add('hidden');
       document.getElementById('view-login').classList.remove('hidden');
     }
