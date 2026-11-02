@@ -1348,7 +1348,10 @@
         return;
       }
 
-      const terurut = [...semuaMilikMurid].sort((a, b) => a.kode_bab.localeCompare(b.kode_bab));
+      // Natural Sort agar Bab2_10 berada sebelum Bab10_10
+      const terurut = [...semuaMilikMurid].sort((a, b) =>
+        String(a.kode_bab).localeCompare(String(b.kode_bab), undefined, { numeric: true, sensitivity: 'base' })
+      );
       const identitas = {
         nisn: terurut[0].nisn,
         nama: terurut[0].nama,
